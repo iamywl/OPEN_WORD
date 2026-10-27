@@ -1,0 +1,133 @@
+{
+  "name": "open-word",
+  "displayName": "Open Word (.docx viewer & editor)",
+  "description": "High-performance .docx word processor. View documents in VS Code with frosted glass UI, export to PDF, extract text, and launch native macOS Metal & Windows DirectX desktop app.",
+  "version": "0.1.0",
+  "publisher": "iamywl",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "docx",
+    "word",
+    "document",
+    "office",
+    "open word",
+    "wordcraft",
+    "rtf",
+    "odt",
+    "pdf",
+    "korean"
+  ],
+  "activationEvents": [
+    "onCustomEditor:open-word.docxEditor"
+  ],
+  "main": "./src/extension.js",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamywl/OPEN_WORD.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iamywl/OPEN_WORD/issues"
+  },
+  "homepage": "https://github.com/iamywl/OPEN_WORD",
+  "license": "MIT",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "open-word.docxEditor",
+        "displayName": "Open Word Document Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.docx"
+          },
+          {
+            "filenamePattern": "*.doc"
+          },
+          {
+            "filenamePattern": "*.rtf"
+          },
+          {
+            "filenamePattern": "*.odt"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "open-word.openNative",
+        "title": "Open Word: Open in Native Desktop App (macOS Metal / Windows DirectX)"
+      },
+      {
+        "command": "open-word.convertToPdf",
+        "title": "Open Word: Convert to PDF"
+      },
+      {
+        "command": "open-word.extractText",
+        "title": "Open Word: Extract Document Text / Markdown"
+      },
+      {
+        "command": "open-word.inspectDocx",
+        "title": "Open Word: Inspect OOXML Structure"
+      },
+      {
+        "command": "open-word.openSample",
+        "title": "Open Word: Launch Desktop App with Sample Document"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "open-word.openNative",
+          "when": "resourceExtname == .docx || resourceExtname == .doc || resourceExtname == .rtf || resourceExtname == .odt",
+          "group": "open_word_group@1"
+        },
+        {
+          "command": "open-word.convertToPdf",
+          "when": "resourceExtname == .docx || resourceExtname == .doc || resourceExtname == .rtf || resourceExtname == .odt",
+          "group": "open_word_group@2"
+        },
+        {
+          "command": "open-word.extractText",
+          "when": "resourceExtname == .docx || resourceExtname == .doc || resourceExtname == .rtf || resourceExtname == .odt",
+          "group": "open_word_group@3"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "open-word.openNative",
+          "when": "activeCustomEditorId == 'open-word.docxEditor'",
+          "group": "navigation@1"
+        },
+        {
+          "command": "open-word.convertToPdf",
+          "when": "activeCustomEditorId == 'open-word.docxEditor'",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Open Word Configuration",
+      "properties": {
+        "open-word.nativeBinaryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to custom WordCraft native binary (wordcraft or wordcraft.exe)."
+        },
+        "open-word.cliBinaryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to custom WordCraft CLI binary (wordcraft-cli or wordcraft-cli.exe)."
+        }
+      }
+    }
+  }
+}

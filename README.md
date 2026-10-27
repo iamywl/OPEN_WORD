@@ -208,6 +208,35 @@ wordcraft-cli run --script job.json                 # the same from a file: comm
 
 Web: `cd apps/wordcraft-web && trunk serve`, then open <http://127.0.0.1:8771/?sample>.
 
+## 🔌 Visual Studio Code 확장 프로그램 (Open Word VS Code Extension)
+
+VS Code 내에서 `.docx`, `.doc`, `.rtf`, `.odt` 문서를 즉시 미리보고 데스크톱 앱 브리지를 제공하는 공식 확장 프로그램입니다.
+
+- **프로스티드 글래스 UI (Frosted Glass UI)**: 반투명 리본과 스펙큘러 보더, WCAG 4.5:1 고대비 디자인.
+- **한글 및 유니코드 완벽 지원**: 맑은 고딕, 애플 산돌고딕 네오 기반 글리프 깨짐 없는 문서 렌더링.
+- **네이티브 데스크톱 앱 연동**: 1클릭으로 macOS Metal 및 Windows DirectX 하드웨어 가속 데스크톱 앱 즉시 실행.
+- **PDF 변환 및 마크다운 추출**: 문서 서식을 보존한 채 고화질 PDF 변환 및 Markdown 텍스트 추출 지원.
+
+### 1. 로컬 VSIX 패키지 설치
+빌드된 패키지(`open-word-0.1.0.vsix`)를 VS Code에 직접 설치합니다:
+```sh
+code --install-extension open-word-0.1.0.vsix
+```
+또는 VS Code 확장(Extensions) 탭 ▸ 우측 상단 `...` 메뉴 ▸ **"VSIX에서 설치...(Install from VSIX...)"** 를 선택하여 설치할 수 있습니다.
+
+### 2. VS Code 마켓플레이스 (Extension Store) 게시 및 업로드 가이드
+1. **웹 관리자 포털 원클릭 업로드 (권장)**:
+   - [Visual Studio Marketplace Management Portal](https://marketplace.visualstudio.com/manage)에 접속하여 로그인합니다.
+   - **"New extension"** ▸ **"Visual Studio Code"** 버튼을 클릭합니다.
+   - 프로젝트 루트의 `open-word-0.1.0.vsix` 파일을 드래그 앤 드롭하면 마켓플레이스 검증 및 업로드가 완료됩니다.
+2. **CLI 터미널 퍼블리시 (`vsce`)**:
+   - Azure DevOps에서 `Marketplace (Manage)` 권한을 가진 Personal Access Token(PAT)을 발급받습니다.
+   - 터미널에서 다음 명령어를 실행하여 바로 배포할 수 있습니다:
+     ```sh
+     cd apps/vscode-extension
+     npx @vscode/vsce publish -p <YOUR_PERSONAL_ACCESS_TOKEN>
+     ```
+
 ## 🍎 macOS 사용법 (macOS Guide)
 
 WordCraft는 macOS(Apple Silicon M1/M2/M3/M4 및 Intel)를 완벽하게 지원하며, Metal GPU 하드웨어 가속, Retina 초고해상도 디스플레이, 한국어 IME 한글 입력을 기본 지원합니다.
