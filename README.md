@@ -97,6 +97,7 @@ Every screenshot below is WordCraft itself, rendered offscreen by its own UI tes
 - **Familiar.** Ribbon tabs, groups, shortcuts and behaviour: Enter continues a list,
   Tab demotes it, Ctrl/⌘+B bolds the word under the caret, the Styles gallery previews styles live,
   F4 repeats, F7 checks spelling, F8 extends the selection.
+- **Glass Design.** Modern Glassmorphism & Frosted Acrylic aesthetic: translucent ribbon, specular highlight borders, soft ambient diffusion shadows, and fluid curvature, designed to keep focus on your writing while reducing visual fatigue. Detailed in [docs/glass-design-philosophy.md](docs/glass-design-philosophy.md).
 - **Your files.** Opens and saves .docx (OOXML), and also .odt, .rtf, .html, .md, .tex (LaTeX), .txt; opens legacy 97-2003 .doc; exports PDF
   with real, selectable text, links and bookmarks.
 - **Fast.** Paragraph layout is cached, so typing in a 188-page document re-lays it out in about
@@ -109,6 +110,32 @@ Every screenshot below is WordCraft itself, rendered offscreen by its own UI tes
 - **Private.** Spelling, grammar and everything else work offline.
 - **Open.** MIT OR Apache-2.0. Clean-room: built from public specifications and observation, with
   every asset original or openly licensed.
+
+## 💎 글래스 디자인 시스템 (Glass Design Philosophy)
+
+WordCraft는 전통적인 플랫 오피스 UI의 무거움을 탈피하고, 현대적인 **글래스모피즘(Glassmorphism) 및 프로스티드 글래스(Frosted Glass / 반투명 아크릴)** 디자인 시스템을 전면 채택합니다 ([docs/glass-design-philosophy.md](docs/glass-design-philosophy.md)).
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ [Glass Title Bar]  문서 제목 (반투명 크롬 & 빛 반사 1px Specular Edge) │
+├────────────────────────────────────────────────────────────────────────┤
+│ [Frosted Acrylic Ribbon] 도구 모음 (은은한 블러 아크릴 쉘)             │
+├────────────────────┬───────────────────────────────────────────────────┤
+│ [Side Glass Pane]  │                                                   │
+│ 탐색 및 스타일 갤러리 │               [ Paper Canvas ]                    │
+│ (스모키 글래스 패널) │             선명한 종이 본문 캔버스                │
+│                    │              (WCAG 4.5:1 가독성 보장)             │
+├────────────────────┴───────────────────────────────────────────────────┤
+│ [Glass Status Bar]  페이지 번호, 단어 수 (반투명 하단 레일)            │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+- **반투명 프로스티드 쉘 (Translucent Frosted Shell):** 상단 리본과 사이드 패널이 캔버스를 은은하게 투과하여 가볍고 모던한 느낌을 줍니다.
+- **스페큘러 하이라이트 엣지 (Specular Edge Highlight):** 1px의 미세한 유리 빛 반사 라인(`Specular Border`)으로 정밀하고 유려한 마감을 선사합니다.
+- **다층 앰비언트 섀도우 (Ambient Diffuse Shadows):** 직각의 딱딱한 그림자 대신 빛이 유리를 투과하는 듯한 부드러운 24~32px 확산 섀도우를 적용했습니다.
+- **유기적 곡률 (Fluid Curvature):** 윈도우/다이얼로그 10px, 팝업 8px, 컨트롤 6px의 유려한 코너 반경을 유지합니다.
+- **철저한 문서 중심 가독성 (Paper-First & WCAG 4.5:1):** 글래스 효과가 결코 텍스트 가독성을 해치지 않도록 본문 캔버스는 선명도를 보장하며 모든 텍스트는 고대비 명도를 준수합니다.
+
 
 ## What works today
 

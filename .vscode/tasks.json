@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "WordCraft: Run Native App (Sample Document)",
+      "type": "shell",
+      "command": "cargo run --release -p wordcraft -- --sample",
+      "problemMatcher": [
+        "$rustc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "WordCraft: Run Native App (Test Document)",
+      "type": "shell",
+      "command": "cargo run --release -p wordcraft -- test_documents/01_basic_formatting.docx",
+      "problemMatcher": [
+        "$rustc"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "WordCraft: Run Native App (Blank Document)",
+      "type": "shell",
+      "command": "cargo run --release -p wordcraft",
+      "problemMatcher": [
+        "$rustc"
+      ]
+    },
+    {
+      "label": "WordCraft CLI: Convert Docx to PDF",
+      "type": "shell",
+      "command": "cargo run --release -p wordcraft-cli -- convert test_documents/01_basic_formatting.docx output.pdf",
+      "problemMatcher": [
+        "$rustc"
+      ]
+    },
+    {
+      "label": "WordCraft: Run Tests (ui-egui)",
+      "type": "shell",
+      "command": "cargo test -p wordcraft-ui-egui --lib",
+      "problemMatcher": [
+        "$rustc"
+      ],
+      "group": "test"
+    },
+    {
+      "label": "WordCraft: Package macOS App Bundle (.app & DMG)",
+      "type": "shell",
+      "command": "bash packaging/macos/package.sh",
+      "problemMatcher": []
+    }
+  ]
+}

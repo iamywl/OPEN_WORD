@@ -1,0 +1,66 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug WordCraft Desktop (Sample)",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=wordcraft",
+          "--package=wordcraft"
+        ],
+        "filter": {
+          "name": "wordcraft",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "--sample"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug WordCraft Desktop (Test Document)",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=wordcraft",
+          "--package=wordcraft"
+        ],
+        "filter": {
+          "name": "wordcraft",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "test_documents/01_basic_formatting.docx"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug WordCraft CLI",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=wordcraft-cli",
+          "--package=wordcraft-cli"
+        ],
+        "filter": {
+          "name": "wordcraft-cli",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "info",
+        "test_documents/01_basic_formatting.docx"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
