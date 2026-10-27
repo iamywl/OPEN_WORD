@@ -2,6 +2,11 @@
 
 All notable changes to the "open-word" extension will be documented in this file.
 
+## [0.1.1] - 2026-10-28
+
+### Fixed
+- Fixed `openCustomDocument is not a function` error when opening `.docx` files by implementing full `CustomReadonlyEditorProvider` interface.
+
 ## [0.1.0] - 2026-10-28
 
 ### Added

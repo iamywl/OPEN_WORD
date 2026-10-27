@@ -192,6 +192,13 @@ class DocxCustomEditorProvider {
     this.context = context;
   }
 
+  async openCustomDocument(uri, _openContext, _token) {
+    return {
+      uri,
+      dispose: () => {}
+    };
+  }
+
   async resolveCustomEditor(document, webviewPanel, _token) {
     const filePath = document.uri.fsPath;
     const fileName = path.basename(filePath);

@@ -2,7 +2,7 @@
   "name": "open-word",
   "displayName": "Open Word (.docx viewer & editor)",
   "description": "High-performance .docx word processor. View documents in VS Code with frosted glass UI, export to PDF, extract text, and launch native macOS Metal & Windows DirectX desktop app.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "iamywl",
   "engines": {
     "vscode": "^1.80.0"
