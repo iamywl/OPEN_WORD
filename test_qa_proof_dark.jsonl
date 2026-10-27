@@ -1,0 +1,5 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "ui.theme", "params": {"value": "dark"}}}
+{"method": "engine.execute", "params": {"command": "view.darkMode", "params": {}}}
+{"steps": 15}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_glass_dark.png"}
