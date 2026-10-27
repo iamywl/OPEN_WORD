@@ -101,7 +101,12 @@ fn candidates(hans: bool, korean: bool) -> Vec<&'static str> {
                 "/System/Library/PrivateFrameworks/FontServices.framework/Resources/Reserved/PingFangUI.ttc",
             ],
             &["ヒラギノ角ゴシック W3.ttc", "Hiragino Sans W3.ttc"],
-            &["/System/Library/Fonts/AppleSDGothicNeo.ttc", "/System/Library/Fonts/Supplemental/AppleGothic.ttf"],
+            &[
+                "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+                "/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+                "AppleSDGothicNeo.ttc",
+                "AppleGothic.ttf",
+            ],
         )
     } else {
         (
@@ -127,15 +132,16 @@ fn candidates(hans: bool, korean: bool) -> Vec<&'static str> {
                 "adobe-source-han-sans/SourceHanSansK-Regular.otf",
                 "opentype/adobe-source-han-sans/SourceHanSansK-Regular.otf",
                 "truetype/nanum/NanumGothic.ttf",
+                "NanumGothic.ttf",
             ],
         )
     };
     if korean {
         ko.iter().chain(ja).chain(zh).copied().collect()
     } else if hans {
-        zh.to_vec()
+        zh.iter().chain(ko).chain(ja).copied().collect()
     } else {
-        ja.iter().chain(zh).copied().collect()
+        ja.iter().chain(zh).chain(ko).copied().collect()
     }
 }
 

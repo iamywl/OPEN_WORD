@@ -21,8 +21,9 @@ impl WordApp {
     /// those collections are too large to add here.
     pub(super) fn ensure_caption_fonts(&mut self) {
         let stem = self.title_stem();
-        if stem.chars().any(wordcraft_fonts::is_cjk) {
+        if stem.chars().any(wordcraft_fonts::is_cjk) && !self.want_system_cjk {
             self.want_system_cjk = true;
+            self.styled = false;
         }
         let new = theme::faces_for_preedit(&stem, &self.canvas.ime_faces, theme::caption_char_covered, |c| {
             wordcraft_fonts::FontDb::global().fallback_for(c, u32::MAX)
@@ -50,8 +51,9 @@ impl WordApp {
             chars.extend(c.author.chars());
             chars.extend(doc.plain_text(wordcraft_doc::StoryRef::Part(c.part)).chars());
         }
-        if chars.iter().any(|c| wordcraft_fonts::is_cjk(*c)) {
+        if chars.iter().any(|c| wordcraft_fonts::is_cjk(*c)) && !self.want_system_cjk {
             self.want_system_cjk = true;
+            self.styled = false;
         }
         let text: String = chars.into_iter().collect();
         let new = theme::faces_for_preedit(&text, &self.canvas.ime_faces, theme::caption_char_covered, |c| {
@@ -78,8 +80,9 @@ impl WordApp {
         }
         self.recover_fonts_for = Some(key);
         let chars: std::collections::BTreeSet<char> = docs.iter().flat_map(|d| d.name.chars()).collect();
-        if chars.iter().any(|c| wordcraft_fonts::is_cjk(*c)) {
+        if chars.iter().any(|c| wordcraft_fonts::is_cjk(*c)) && !self.want_system_cjk {
             self.want_system_cjk = true;
+            self.styled = false;
         }
         let text: String = chars.into_iter().collect();
         let new = theme::faces_for_preedit(&text, &self.canvas.ime_faces, theme::caption_char_covered, |c| {
@@ -154,7 +157,7 @@ impl WordApp {
     /// Install the interface fonts when the language, the CJK fallback, or a caption fallback
     /// face has changed since the last install.
     pub(super) fn install_ui_fonts(&mut self, ctx: &egui::Context, lang: i18n::Lang) {
-        let system_cjk = self.fonts_system_cjk || self.want_system_cjk || lang.uses_cjk();
+        let system_cjk = self.fonts_system_cjk || self.want_system_cjk || lang.uses_cjk() || cfg!(not(target_arch = "wasm32"));
         if !self.styled || lang.prefers_hans() != self.fonts_hans || lang.prefers_korean() != self.fonts_korean || system_cjk != self.fonts_system_cjk
         {
             // Every window's borrowed faces: the fonts are the app's.

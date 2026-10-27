@@ -22,22 +22,28 @@ const NO_START: &str = "、。，．・：；？！゛゜ヽヾゝゞ々〻〉�
 /// East Asian characters a line may not end with: opening brackets and quotes, currency signs.
 const NO_END: &str = "〈《「『【〔〖〘〚〝（［｛｟｢＄￡￥";
 
-/// Whether `c` is East Asian text: CJK ideographs, kana, bopomofo, CJK punctuation, and
-/// fullwidth/halfwidth forms (not spaces, not combining sound marks).
+/// Whether `c` is East Asian text: CJK ideographs, kana, bopomofo, CJK punctuation,
+/// Hangul (jamo, syllables, compatibility), and fullwidth/halfwidth forms (not spaces,
+/// not combining sound marks).
 pub fn is_east_asian(c: char) -> bool {
     matches!(c as u32,
-        0x2E80..=0x2FFF          // radicals, ideographic description
+        0x1100..=0x11FF          // Hangul Jamo
+        | 0x2E80..=0x2FFF        // radicals, ideographic description
         | 0x3001..=0x303F        // CJK symbols and punctuation (not the ideographic space)
         | 0x3040..=0x3098        // hiragana
         | 0x309B..=0x30FF        // sound marks, katakana
         | 0x3100..=0x312F        // bopomofo
+        | 0x3130..=0x318F        // Hangul Compatibility Jamo
         | 0x3190..=0x31FF        // kanbun, CJK strokes, katakana extensions
         | 0x3400..=0x4DBF        // CJK extension A
         | 0x4E00..=0x9FFF        // CJK unified ideographs
+        | 0xA960..=0xA97F        // Hangul Jamo Extended-A
+        | 0xAC00..=0xD7AF        // Hangul Syllables
+        | 0xD7B0..=0xD7FF        // Hangul Jamo Extended-B
         | 0xF900..=0xFAFF        // compatibility ideographs
         | 0xFE30..=0xFE4F        // CJK compatibility forms
         | 0xFF01..=0xFFEF        // fullwidth and halfwidth forms
-        | 0x20000..=0x3FFFF) // supplementary ideographs
+        | 0x20000..=0x3FFFF)     // supplementary ideographs
 }
 
 /// Adjust the break opportunities `opps` (byte offsets into `text`: a line may start there) for

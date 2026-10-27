@@ -89,6 +89,20 @@ fn substitutes_by_name(family: &str) -> (&'static [&'static str], bool) {
     const KHMER: &[&str] = &["Khmer Sangam MN", "Khmer MN", "Noto Sans Khmer"];
     #[cfg(not(any(windows, target_os = "macos")))]
     const KHMER: &[&str] = &["Noto Sans Khmer", "Noto Serif Khmer"];
+    // Korean document fonts (Malgun Gothic, Batang, Gulim, Dotum, NanumGothic, Apple SD Gothic Neo…)
+    #[cfg(windows)]
+    const KOREAN_SANS: &[&str] = &["Malgun Gothic", "Dotum", "Gulim", "Noto Sans CJK KR", "NanumGothic", "Apple SD Gothic Neo"];
+    #[cfg(target_os = "macos")]
+    const KOREAN_SANS: &[&str] = &["Apple SD Gothic Neo", "AppleGothic", "Malgun Gothic", "Noto Sans CJK KR", "NanumGothic"];
+    #[cfg(not(any(windows, target_os = "macos")))]
+    const KOREAN_SANS: &[&str] = &["Noto Sans CJK KR", "Noto Sans KR", "NanumGothic", "Malgun Gothic", "Apple SD Gothic Neo"];
+
+    #[cfg(windows)]
+    const KOREAN_SERIF: &[&str] = &["Batang", "Gungsuh", "Malgun Gothic", "Noto Serif CJK KR", "NanumMyeongjo", "AppleMyungjo"];
+    #[cfg(target_os = "macos")]
+    const KOREAN_SERIF: &[&str] = &["AppleMyungjo", "Batang", "Apple SD Gothic Neo", "Noto Serif CJK KR", "NanumMyeongjo"];
+    #[cfg(not(any(windows, target_os = "macos")))]
+    const KOREAN_SERIF: &[&str] = &["Noto Serif CJK KR", "Noto Serif KR", "NanumMyeongjo", "Batang", "AppleMyungjo"];
     // Palatino Linotype / Book Antiqua: macOS ships the same design as "Palatino"; open
     // look-alikes with matching metrics (TeX Gyre Pagella, URW P052 / Palladio) on Linux.
     const PALATINO: &[&str] = &[
@@ -125,6 +139,12 @@ fn substitutes_by_name(family: &str) -> (&'static [&'static str], bool) {
     }
     if is_persian_sans(&f) {
         return (ARABIC_SANS, true);
+    }
+    if is_korean_serif(&f) {
+        return (KOREAN_SERIF, true);
+    }
+    if is_korean_sans(&f) {
+        return (KOREAN_SANS, true);
     }
     match f.as_str() {
         "palatino linotype" | "book antiqua" | "palatino" => (PALATINO, true),
@@ -270,6 +290,57 @@ fn is_persian_sans(f: &str) -> bool {
         "arabic transparent",
     ];
     NAMES.contains(&f) || f.starts_with("iransans") || f.starts_with("iranyekan")
+}
+
+/// Korean sans-serif document fonts (Malgun Gothic, Dotum, Gulim, Apple SD Gothic Neo, NanumGothic…).
+fn is_korean_sans(f: &str) -> bool {
+    const NAMES: &[&str] = &[
+        "malgun gothic",
+        "malgun gothic semilight",
+        "맑은 고딕",
+        "맑은고딕",
+        "dotum",
+        "dotumche",
+        "돋움",
+        "돋움체",
+        "gulim",
+        "gulimche",
+        "굴림",
+        "굴림체",
+        "nanumgothic",
+        "nanum gothic",
+        "나눔고딕",
+        "apple sd gothic neo",
+        "apple sd 산돌고딕 neo",
+        "applesdgothicneo",
+        "applegothic",
+        "애플고딕",
+        "noto sans kr",
+        "noto sans cjk kr",
+    ];
+    NAMES.contains(&f)
+}
+
+/// Korean serif document fonts (Batang, Gungsuh, NanumMyeongjo, AppleMyungjo…).
+fn is_korean_serif(f: &str) -> bool {
+    const NAMES: &[&str] = &[
+        "batang",
+        "batangche",
+        "바탕",
+        "바탕체",
+        "gungsuh",
+        "gungsuhche",
+        "궁서",
+        "궁서체",
+        "nanummyeongjo",
+        "nanum myeongjo",
+        "나눔명조",
+        "applemyungjo",
+        "애플명조",
+        "noto serif kr",
+        "noto serif cjk kr",
+    ];
+    NAMES.contains(&f)
 }
 
 /// Thai document fonts: Word's Thai families (Cordia New, Angsana New, Browallia New, the UPC
@@ -687,11 +758,34 @@ mod tests {
 
     #[test]
     fn fonts_with_a_clone_have_named_substitutes() {
-        for f in ["Times New Roman", "Times New Roman Cyr", "Arial", "Courier New", "Palatino Linotype", "Symbol"] {
+        for f in ["Times New Roman", "Times New Roman Cyr", "Arial", "Courier New", "Palatino Linotype", "Symbol", "Malgun Gothic", "맑은 고딕", "Batang", "바탕"] {
             assert!(has_named_substitutes(f), "{f}");
         }
         for f in ["No Such Brand Font", "Cambria", "Georgia", "Brand Serif"] {
             assert!(!has_named_substitutes(f), "{f}");
         }
+    }
+
+    #[test]
+    fn korean_fonts_substitute_korean_faces() {
+        for f in ["Malgun Gothic", "맑은 고딕", "Dotum", "돋움", "Gulim", "굴림", "NanumGothic", "나눔고딕"] {
+            assert!(has_named_substitutes(f), "{f}");
+            let subs = substitutes(f);
+            assert!(
+                subs.contains(&"Apple SD Gothic Neo") || subs.contains(&"Malgun Gothic") || subs.contains(&"Noto Sans CJK KR"),
+                "{f}: {subs:?}"
+            );
+        }
+        for f in ["Batang", "바탕", "Gungsuh", "궁서", "NanumMyeongjo", "나눔명조"] {
+            assert!(has_named_substitutes(f), "{f}");
+            let subs = substitutes(f);
+            assert!(
+                subs.contains(&"AppleMyungjo") || subs.contains(&"Batang") || subs.contains(&"Noto Serif CJK KR"),
+                "{f}: {subs:?}"
+            );
+        }
+        // Resolving "맑은 고딕" on macOS finds Apple SD Gothic Neo and covers Hangul.
+        let r = resolve("맑은 고딕", false, false);
+        assert!(r.face.covers('한'), "resolved face {} covers Hangul", r.face.family);
     }
 }

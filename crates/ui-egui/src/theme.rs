@@ -579,10 +579,19 @@ pub fn font_definitions_language(prefer_hans: bool, prefer_korean: bool, system_
     // without its Chinese face, #241, or with faces lacking catalog characters, #486): an
     // installed CJK font after them, so the menus don't show boxes or `?`.
     #[cfg(not(target_arch = "wasm32"))]
-    if system_cjk && let Some(f) = system_cjk_font(prefer_hans, prefer_korean) {
-        let mut data = FontData::from_static(&f.bytes);
-        data.index = f.index;
-        add_cjk(&mut fonts, format!("system {}", f.family), data);
+    if system_cjk {
+        if let Some(f) = system_cjk_font(prefer_hans, prefer_korean) {
+            let mut data = FontData::from_static(&f.bytes);
+            data.index = f.index;
+            add_cjk(&mut fonts, format!("system {}", f.family), data);
+        }
+        if !prefer_korean {
+            if let Some(f) = system_cjk_font(false, true) {
+                let mut data = FontData::from_static(&f.bytes);
+                data.index = f.index;
+                add_cjk(&mut fonts, format!("system-ko {}", f.family), data);
+            }
+        }
     }
     #[cfg(target_arch = "wasm32")]
     let _ = system_cjk;
@@ -590,10 +599,9 @@ pub fn font_definitions_language(prefer_hans: bool, prefer_korean: bool, system_
     fonts
 }
 
-/// The installed CJK interface font for a Chinese (`hans`) or other interface, chosen once:
-/// `None` when the embedded faces already cover the interface text
-/// ([`cjk_font_text`](crate::i18n::Lang::cjk_font_text)). The font is picked for the catalogs'
-/// missing characters, or for the language names when only those are missing.
+/// The installed CJK interface font for a Chinese (`hans`), Korean (`korean`), or other interface,
+/// chosen once. When embedded faces or catalogs have missing characters, or in builds without
+/// craft-fonts, loads the best installed system CJK font.
 #[cfg(not(target_arch = "wasm32"))]
 fn system_cjk_font(hans: bool, korean: bool) -> Option<&'static wordcraft_fonts::SystemUiFont> {
     static ZH: std::sync::OnceLock<Option<wordcraft_fonts::SystemUiFont>> = std::sync::OnceLock::new();
@@ -612,9 +620,6 @@ fn system_cjk_font(hans: bool, korean: bool) -> Option<&'static wordcraft_fonts:
         let mut needed = wordcraft_fonts::ui_uncovered_cjk(&catalogs, &embedded);
         if needed.is_empty() {
             needed = wordcraft_fonts::ui_uncovered_cjk(&[&names], &embedded);
-            if needed.is_empty() {
-                return None;
-            }
         }
         log::debug!("interface: {} CJK characters lack an embedded glyph", needed.len());
         wordcraft_fonts::system_cjk_ui_font_for(hans, korean, &needed)

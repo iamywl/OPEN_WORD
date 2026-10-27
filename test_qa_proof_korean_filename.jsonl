@@ -1,0 +1,4 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "file.open", "params": {"path": "/Users/ywlee/sideproejct/word_extention/test_documents/한글_보고서_V1.docx"}}}
+{"steps": 20}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_korean_filename.png"}

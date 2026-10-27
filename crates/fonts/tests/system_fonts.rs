@@ -21,3 +21,12 @@ fn a_fresh_session_finds_installed_fonts_by_name() {
     assert_eq!(&FontDb::global().face(family, "Regular").family, family);
     assert!(FontDb::global().families().contains(family));
 }
+
+#[test]
+fn a_fresh_session_resolves_hangul_fallback() {
+    let probe = FontDb::global();
+    let fb = probe.fallback_for('한', 0);
+    assert!(fb.is_some(), "Hangul fallback font must be resolved");
+    let run_fb = probe.fallback_for_run(&['한', '글', '테', '스', '트'], 0, false, false);
+    assert!(run_fb.is_some(), "Hangul run fallback font must be resolved");
+}

@@ -81,6 +81,18 @@ pub fn script_fallbacks(c: char) -> &'static [&'static str] {
         return COLOR_EMOJI;
     }
     match c.script() {
+        Script::Hangul => &[
+            "Apple SD Gothic Neo",
+            "Malgun Gothic",
+            "Noto Sans CJK KR",
+            "Noto Sans KR",
+            "NanumGothic",
+            "AppleGothic",
+            "Batang",
+            "Gulim",
+            "Dotum",
+            "Gungsuh",
+        ],
         Script::Myanmar => &["Myanmar Text", "Noto Sans Myanmar", "Padauk", "Pyidaungsu", "Noto Serif Myanmar", "Myanmar Sangam MN", "Myanmar MN"],
         Script::Khmer => &["Leelawadee UI", "Khmer UI", "Noto Sans Khmer", "Noto Serif Khmer", "Khmer OS", "Khmer Sangam MN", "Khmer MN"],
         Script::Devanagari => &["Nirmala UI", "Mangal", "Kohinoor Devanagari", "Noto Sans Devanagari", "Noto Serif Devanagari", "Lohit Devanagari"],
