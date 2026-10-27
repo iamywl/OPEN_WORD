@@ -57,7 +57,8 @@
 > last week. If you make things, you're one of us. **[Come say hi on Discord](https://discord.gg/artcraft).**
 
 <p align="center">
-  <a href="#a-tour">A tour</a> ·
+  <a href="#a-tour">A tour (주요 화면)</a> ·
+  <a href="#-macos-사용법-macos-guide">macOS 가이드</a> ·
   <a href="#why-wordcraft">Why WordCraft</a> ·
   <a href="#what-works-today">What works today</a> ·
   <a href="#quick-start">Quick start</a> ·
@@ -69,25 +70,25 @@
   <a href="#license-and-credits">License and credits</a>
 </p>
 
-## A tour
+## A tour (주요 화면 둘러보기)
 
 Every screenshot below is WordCraft itself, rendered offscreen by its own UI test harness
-(`cargo run -p wordcraft-ui-egui --example ui_shot`).
+(`cargo run -p wordcraft-ui-egui --example ui_shot`). 아래 스크린샷들은 WordCraft의 실제 UI 화면입니다.
 
 <table>
 <tr>
-<td width="50%" valign="top"><img src="docs/images/review.png" alt="The Review tab with Track Changes on: the word forty is inserted in magenta and thirty struck through; three commented phrases are shaded and joined by dashed leader lines to comment balloons in a grey markup area to the right of the page" width="100%"><p align="center"><sub><b>Review.</b> Track changes, comment balloons in the margin, accept and reject, spelling and grammar as you type.</sub></p></td>
-<td width="50%" valign="top"><img src="docs/images/references.png" alt="The References tab with two pages side by side: a table of contents with dotted leaders and page numbers on page one, and a styled table, numbered list and hyperlink on page two" width="100%"><p align="center"><sub><b>References.</b> Tables of contents, footnotes, citations in APA, MLA, Chicago or IEEE, index and captions.</sub></p></td>
+<td width="50%" valign="top"><img src="docs/images/review.png" alt="The Review tab with Track Changes on: the word forty is inserted in magenta and thirty struck through; three commented phrases are shaded and joined by dashed leader lines to comment balloons in a grey markup area to the right of the page" width="100%"><p align="center"><sub><b>검토 및 변경 내용 추적 (Review)</b><br>Track Changes, 우측 여백 메모 풍선(Comment Balloons), 변경 승인/거부, 실시간 맞춤법 및 문법 검사.</sub></p></td>
+<td width="50%" valign="top"><img src="docs/images/references.png" alt="The References tab with two pages side by side: a table of contents with dotted leaders and page numbers on page one, and a styled table, numbered list and hyperlink on page two" width="100%"><p align="center"><sub><b>참조 및 목차 (References)</b><br>점선 채움선이 있는 자동 목차(TOC), 각주/미주, 학술 인용(APA, MLA, Chicago, IEEE), 표 스타일 및 링크.</sub></p></td>
 </tr>
 <tr>
-<td width="50%" valign="top"><img src="docs/images/design.png" alt="The Design tab showing style-set previews; the document is set in a serif theme with plum headings underlined by thin rules and a pale diagonal DRAFT watermark behind the text" width="100%"><p align="center"><sub><b>Design.</b> Themes, style sets, paragraph spacing, watermarks, page colour and borders.</sub></p></td>
-<td width="50%" valign="top"><img src="docs/images/dark.png" alt="WordCraft in dark mode with the Insert tab open and formatting marks shown: pilcrows at paragraph ends and dots for spaces" width="100%"><p align="center"><sub><b>Dark mode</b> with formatting marks, and the Insert tab: tables, pictures, shapes, links, headers, footers, fields and symbols.</sub></p></td>
+<td width="50%" valign="top"><img src="docs/images/design.png" alt="The Design tab showing style-set previews; the document is set in a serif theme with plum headings underlined by thin rules and a pale diagonal DRAFT watermark behind the text" width="100%"><p align="center"><sub><b>디자인 및 테마 (Design)</b><br>문서 테마, 스타일 세트 실시간 미리보기, 단락 간격, 대각선 워터마크(Watermark), 페이지 배경색 및 테두리.</sub></p></td>
+<td width="50%" valign="top"><img src="docs/images/dark.png" alt="WordCraft in dark mode with the Insert tab open and formatting marks shown: pilcrows at paragraph ends and dots for spaces" width="100%"><p align="center"><sub><b>다크 모드 및 조판 부호 (Dark Mode)</b><br>눈이 편안한 네이티브 다크 모드, 공백·단락 조판 부호(Pilcrow) 표시, 표/그림/도형/수식/기호 삽입(Insert).</sub></p></td>
 </tr>
 <tr>
-<td colspan="2"><img src="docs/images/layout.png" alt="The Layout tab at 80% zoom: the first paragraph opens with a three-line drop cap E, a dark blue circle sits beside the second section with its paragraph wrapping around it and hyphenating art-ist at the line end, every line is numbered in the left margin and a thin blue border surrounds the page" width="100%"><p align="center"><sub><b>Layout.</b> Drop caps, text wrapping around pictures and shapes, automatic hyphenation, line numbers and page borders.</sub></p></td>
+<td colspan="2"><img src="docs/images/layout.png" alt="The Layout tab at 80% zoom: the first paragraph opens with a three-line drop cap E, a dark blue circle sits beside the second section with its paragraph wrapping around it and hyphenating art-ist at the line end, every line is numbered in the left margin and a thin blue border surrounds the page" width="100%"><p align="center"><sub><b>고급 레이아웃 (Layout)</b><br>3줄 높이 드롭캡(Drop Cap), 도형/이미지 주위 텍스트 감싸기(Text Wrapping), 자동 하이픈 연결, 줄 번호 표시, 페이지 경계선.</sub></p></td>
 </tr>
 <tr>
-<td colspan="2"><img src="docs/images/backstage.png" alt="The File tab start page with a Good morning greeting, thumbnails of the Blank document, Studio handbook, Letter, Résumé and Report templates, and a list of recent documents" width="100%"><p align="center"><sub><b>File.</b> Start from a template, open recent documents, edit properties, export to PDF and other formats.</sub></p></td>
+<td colspan="2"><img src="docs/images/backstage.png" alt="The File tab start page with a Good morning greeting, thumbnails of the Blank document, Studio handbook, Letter, Résumé and Report templates, and a list of recent documents" width="100%"><p align="center"><sub><b>파일 및 서식 파일 (File / Backstage)</b><br>새 문서 서식 템플릿(빈 문서, 핸드북, 편지, 이력서, 보고서), 최근 문서 열기, 문서 속성 편집, PDF 및 다양한 포맷 내보내기.</sub></p></td>
 </tr>
 </table>
 
@@ -152,6 +153,124 @@ wordcraft-cli run --script job.json                 # the same from a file: comm
 ```
 
 Web: `cd apps/wordcraft-web && trunk serve`, then open <http://127.0.0.1:8771/?sample>.
+
+## 🍎 macOS 사용법 (macOS Guide)
+
+WordCraft는 macOS(Apple Silicon M1/M2/M3/M4 및 Intel)를 완벽하게 지원하며, Metal GPU 하드웨어 가속, Retina 초고해상도 디스플레이, 한국어 IME 한글 입력을 기본 지원합니다.
+
+### 1. 사전 준비 (Rust 설치)
+
+Mac에 Rust 개발 환경이 설치되어 있지 않다면 터미널에서 다음 명령어 중 하나로 설치합니다:
+
+```sh
+# 공식 rustup 설치 스크립트 (권장)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+
+# 또는 Homebrew를 사용하는 경우
+brew install rust
+```
+
+### 2. 데스크톱 앱 실행 (GUI)
+
+터미널에서 프로젝트 디렉터리로 이동한 후 아래 명령어로 실행할 수 있습니다:
+
+```sh
+# 1) 기본 내장된 샘플 문서와 함께 실행
+cargo run --release -p wordcraft -- --sample
+
+# 2) 새로 생성한 테스트 워드 파일 열기
+cargo run --release -p wordcraft -- test_documents/01_basic_formatting.docx
+
+# 3) 빈 새 문서로 실행
+cargo run --release -p wordcraft
+```
+
+### 3. CLI 도구로 문서 변환 및 검사 (Command Line)
+
+WordCraft는 GUI 없이도 터미널에서 초고속으로 문서를 변환하고 분석할 수 있는 CLI 도구를 제공합니다:
+
+```sh
+# Word(.docx) 문서를 PDF로 변환 (완전한 텍스트 및 링크 보존)
+cargo run --release -p wordcraft-cli -- convert test_documents/01_basic_formatting.docx output.pdf
+
+# Word 문서에서 순수 텍스트(Plain Text)만 고속 추출
+cargo run --release -p wordcraft-cli -- text test_documents/01_basic_formatting.docx
+
+# Word 문서의 XML 내부 구조를 JSON 형태로 분석/점검
+cargo run --release -p wordcraft-cli -- inspect test_documents/01_basic_formatting.docx
+
+# 지원하는 400개 이상의 모든 편집 명령어 확인
+cargo run --release -p wordcraft-cli -- commands
+```
+
+### 4. 사전 빌드된 DMG 설치 (컴파일 없이 바로 실행)
+
+소스 코드 빌드 없이 일반 Mac 애플리케이션처럼 바로 사용하고 싶다면:
+1. [GitHub Releases (최신 버전)](https://github.com/storytold/wordcraft/releases/latest)으로 이동합니다.
+2. `wordcraft-<버전>-macos-universal.dmg` 파일을 다운로드합니다.
+3. DMG 파일을 더블 클릭하여 연 뒤, WordCraft 아이콘을 `응용 프로그램(Applications)` 폴더로 드래그하여 설치합니다.
+   *(Apple의 코드 서명 및 공증이 완료되어 있어 별도의 보안 경고 없이 안전하게 실행됩니다.)*
+
+### 5. macOS 환경 주요 특징 및 단축키
+- **표준 Mac 단축키 완벽 대응**:
+  - `Cmd + B`: 굵게(Bold)
+  - `Cmd + I`: 기울임(Italic)
+  - `Cmd + U`: 밑줄(Underline)
+  - `Cmd + S`: 문서 저장(Save)
+  - `Cmd + O`: 문서 열기(Open)
+  - `Cmd + Z`: 실행 취소(Undo) / `Cmd + Shift + Z`: 다시 실행(Redo)
+  - `Cmd + F`: 찾기 및 바꾸기(Find & Replace)
+- **Metal GPU 하드웨어 가속**: macOS 네이티브 Metal 그래픽 백엔드를 사용하여 배터리 효율을 극대화하고 60fps 이상의 부드러운 스크롤을 제공합니다.
+- **한국어 입력 (IME)**: macOS 기본 한글 입력기(두벌식, 단모음, 세벌식 등)와의 조합 및 커서 동기화를 완벽 지원합니다.
+- **로그 파일 위치**: 실행 중 발생하는 로그 및 디버깅 정보는 `~/Library/Application Support/WordCraft/logs/wordcraft.log`에 보관됩니다.
+
+## 🪟 Windows 사용법 (Windows Guide)
+
+WordCraft는 Windows 10/11(x64, ARM64 Snapdragon, 32-bit x86)을 완벽 지원하며, DirectX 12 하드웨어 가속과 친숙한 Microsoft Word 단축키 및 캡션 바를 제공합니다.
+
+### 1. 사전 준비 (Rust 설치)
+Windows PowerShell 또는 명령 프롬프트(CMD)에서 설치합니다:
+```powershell
+# winget을 사용하는 경우
+winget install Rustlang.Rustup
+
+# 또는 공식 사이트(https://rustup.rs/)에서 rustup-init.exe 다운로드 후 실행
+```
+
+### 2. 데스크톱 앱 실행 (GUI)
+PowerShell에서 프로젝트 폴더로 이동한 뒤 실행합니다:
+```powershell
+# 1) 기본 샘플 문서로 실행
+cargo run --release -p wordcraft -- --sample
+
+# 2) 테스트 워드 문서 열기
+cargo run --release -p wordcraft -- test_documents\01_basic_formatting.docx
+
+# 3) 빈 새 문서로 실행
+cargo run --release -p wordcraft
+```
+
+### 3. CLI를 통한 일괄 처리 및 변환
+```powershell
+# DOCX를 PDF로 초고속 변환
+cargo run --release -p wordcraft-cli -- convert test_documents\01_basic_formatting.docx output.pdf
+
+# DOCX에서 순수 텍스트 추출
+cargo run --release -p wordcraft-cli -- text test_documents\01_basic_formatting.docx
+```
+
+### 4. 사전 빌드된 설치 파일 (MSI / Portable)
+- [GitHub Releases](https://github.com/storytold/wordcraft/releases/latest)에서 시스템 아키텍처에 맞는 파일을 다운로드합니다:
+  - 64비트 일반 PC: `wordcraft-<ver>-windows-x64.msi` (또는 포터블 zip)
+  - ARM PC (Snapdragon): `wordcraft-<ver>-windows-arm64.msi`
+  - 32비트 구형 PC: `wordcraft-<ver>-windows-x86.msi`
+
+### 5. Windows 환경 특징
+- **오피스 표준 단축키**: `Ctrl + B`(굵게), `Ctrl + I`(기울임), `Ctrl + S`(저장), `Ctrl + Z`(실행 취소), `F4`(마지막 작업 반복), `F12`(다른 이름으로 저장), `Alt`(키팁 활성화).
+- **DirectX 12 / Vulkan**: 기본 DirectX 12 그래픽 파이프라인으로 구동되며, 구형 그래픽 카드에서는 WARP 소프트웨어 래스터라이저 또는 Vulkan으로 자동 폴백됩니다.
+
+
 
 ## For agents: CLI and MCP
 

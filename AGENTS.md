@@ -49,6 +49,26 @@ People trust WordCraft with their writing; a crash loses their work. **This outr
 ## Quality gates
 Before every commit: `cargo xtask ci` (fmt, clippy -D warnings, tests, assets, layers, wasm). Commit after every arc of work that builds, with a task id in the message (`M2.1: line spacing dialog`).
 
+## Glass Design Philosophy (글래스 디자인 철학)
+WordCraft는 전통적인 플랫 오피스 UI에서 진화하여 **글래스모피즘(Glassmorphism)과 프로스티드 글래스(Frosted Glass / 반투명 아크릴)** 디자인 시스템을 채택합니다. 상세 명세: [`docs/glass-design-philosophy.md`](docs/glass-design-philosophy.md).
+- **원칙:** 문서 캔버스(Paper)의 가독성을 최우선으로 하되, 상단 리본, 사이드 패널, 다이얼로그 및 팝업 카드는 반투명 블러와 입체적 앰비언트 섀도우를 가집니다.
+- **곡률 및 엣지:** `CornerRadius: 6~10px`, 빛을 머금은 1px 미세 하이라이트 경계선(Specular Border).
+- **접근성:** 반투명 상태에서도 UI 요소와 텍스트는 **WCAG 4.5:1 이상의 명도 대비**를 철저히 유지합니다.
+
+## Cross-Platform Native Parity (macOS & Windows 네이티브 호환)
+WordCraft는 웹뷰나 일렉트론 래퍼가 아닌 **100% 순수 Rust 네이티브 애플리케이션**입니다.
+- **macOS:** Apple Silicon(arm64) 및 Intel(x86_64) Universal 바이너리, Metal GPU 하드웨어 가속, macOS AppKit 윈도우 통합, Cmd(⌘) 기반 표준 단축키, 한글 조합형 IME 완벽 지원.
+- **Windows:** Windows 10/11 x64, arm64, x86 지원, DirectX 12 및 Vulkan 백엔드 지원, Win32 캡션 버튼, Ctrl/Alt 기반 표준 오피스 단축키.
+- **문서 렌더링 일관성:** OS가 달라져도 HarfRust 텍스트 셰이핑과 메트릭 호환 폰트 치환(`wordcraft-fonts`)을 통해 100% 동일한 줄바꿈 및 페이지네이션을 보장합니다.
+
+## Loop Engineering & QA Proof Protocol (루프 엔지니어링 및 캡처 QA 증명)
+모든 개발 및 개선 작업은 **피드백 루프 엔지니어링(Loop Engineering)** 사이클에 따라 100% 완수될 때까지 반복 검증합니다:
+1. **분석 및 설계:** 요구사항 정의 및 명세 수립.
+2. **코드 구현:** Rust 클린룸 및 'Never Crash' 원칙에 따른 구현.
+3. **컴파일 및 단위 테스트:** `cargo test` 및 WCAG 명도 대비 검증 통과.
+4. **헤드리스 스크린샷 QA 캡처:** `cargo run -p wordcraft-ui-egui --example ui_shot -- script.jsonl`를 통해 화면 포커스 간섭 없이 실제 렌더링 결과물(PNG)을 캡처하여 시각적 검증 수행.
+5. **피드백 및 반복 루프:** 결함 발견 시 1번으로 돌아가 100% 달성할 때까지 루프 지속.
+
 ## Typing behaves like Word
 Typing, Enter, Backspace, Tab, lists, AutoCorrect and AutoFormat follow Word's observed behaviour in [`docs/typing-parity.md`](docs/typing-parity.md), pinned by `crates/engine/src/tests/typing.rs` (keys go through the same commands as the keyboard). Change behaviour, doc and tests together; a typing fix lands with a test there. Compare headlessly (`ui_shot`); don't drive GUIs with keystrokes on the shared machine.
 
