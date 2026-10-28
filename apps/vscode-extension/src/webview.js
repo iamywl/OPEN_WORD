@@ -1,9 +1,11 @@
 // High-Readability Full Word Processor Webview Generator for Visual Studio Code (Open Word)
 const { escapeHtml } = require('./docx-parser');
 
-function renderWebviewHtml(docData, fileName, filePath) {
+function renderWebviewHtml(docData, fileName, filePath, wasmConfig = {}) {
   const { metadata, blocks, stats } = docData;
   const title = metadata.title || fileName || 'Document';
+  const isWasmAvailable = !!(wasmConfig && wasmConfig.available);
+  const isWasmDefault = isWasmAvailable && wasmConfig.defaultEngine !== 'lite';
 
   // Render initial document blocks into editable HTML content
   let initialHtml = '';
@@ -284,6 +286,133 @@ function renderWebviewHtml(docData, fileName, filePath) {
       font-weight: 700;
       border: 1px solid rgba(255, 255, 255, 0.35);
       box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Dual Engine Switcher (Glass Capsule Design) */
+    .engine-switcher {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.28);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-specular);
+      gap: 3px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    body.vscode-light .engine-switcher {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .engine-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--ui-subtext);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: inherit;
+    }
+
+    .engine-tab-btn:hover {
+      color: var(--ui-text);
+      background: var(--glass-surface);
+    }
+
+    .engine-tab-btn.active {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+      border-top: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .badge-parity {
+      font-size: 9.5px;
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    /* Engine Views */
+    #wasm-view {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100vh - 45px);
+      overflow: hidden;
+      background: #e6e6e6;
+      z-index: 10;
+    }
+
+    body.vscode-dark #wasm-view {
+      background: #141414;
+    }
+
+    #wordcraft_canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+    }
+
+    #wordcraft_loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: #f8fafc;
+      font-family: var(--font-stack);
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    @keyframes wasm-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .wasm-spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: wasm-spin 0.9s linear infinite;
+      margin-bottom: 14px;
+    }
+
+    #lite-view {
+      position: absolute;
+      top: 45px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100vh - 45px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 10;
     }
 
     /* Ribbon Toolbar Panels */
@@ -598,9 +727,9 @@ function renderWebviewHtml(docData, fileName, filePath) {
 <body>
   <div class="ambient-glow"></div>
 
-  <!-- Top Word Ribbon -->
+  <!-- Top Word Ribbon (Global Glass Header) -->
   <header class="word-ribbon">
-    <!-- Ribbon Row 1: Brand, Tabs, Save & Quick Actions -->
+    <!-- Ribbon Row 1: Brand, Engine Switcher, Save & Quick Actions -->
     <div class="ribbon-top-row">
       <div class="brand-group">
         <div class="word-icon">W</div>
@@ -608,14 +737,18 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <div id="save-badge" class="save-indicator saved">✓ 저장됨</div>
       </div>
 
-      <!-- Word Ribbon Tabs -->
-      <nav class="ribbon-tabs">
-        <button class="ribbon-tab-btn active" onclick="switchRibbonTab('panel-home')">홈 (Home)</button>
-        <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-insert')">삽입 (Insert)</button>
-        <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-layout')">레이아웃 (Layout)</button>
-        <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-review')">검토 (Review)</button>
-        <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-view')">보기 (View)</button>
-      </nav>
+      ${isWasmAvailable ? `
+      <!-- Dual Engine Switcher -->
+      <div class="engine-switcher">
+        <button id="btn-engine-wasm" class="engine-tab-btn ${isWasmDefault ? 'active' : ''}" onclick="switchEngine('wasm')">
+          <span>🚀 Rust Native 엔진</span>
+          <span class="badge-parity">100% Word 패리티</span>
+        </button>
+        <button id="btn-engine-lite" class="engine-tab-btn ${!isWasmDefault ? 'active' : ''}" onclick="switchEngine('lite')">
+          <span>⚡ 경량 웹 에디터</span>
+        </button>
+      </div>
+      ` : ''}
 
       <!-- Quick Action Buttons -->
       <div class="quick-actions">
@@ -625,11 +758,45 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <button class="btn-action" onclick="exportPdf()" title="PDF 문서로 내보내기">
           <span>📄 PDF 변환</span>
         </button>
+        <button class="btn-action" onclick="extractMarkdown()" title="텍스트/마크다운 추출">
+          <span>📝 마크다운</span>
+        </button>
         <button class="btn-action" onclick="launchNativeApp()" title="macOS Metal / Windows DirectX 네이티브 데스크톱 앱에서 열기">
-          <span>🚀 네이티브 앱</span>
+          <span>🖥️ 데스크톱 앱</span>
+        </button>
+        <button class="btn-action" onclick="toggleDarkPaper()" title="다크/라이트 종이 모드 전환">
+          <span>🌓 다크 페이퍼</span>
         </button>
       </div>
     </div>
+  </header>
+
+  ${isWasmAvailable ? `
+  <!-- 🚀 Pure Rust WASM Native Engine View -->
+  <div id="wasm-view" style="display: ${isWasmDefault ? 'block' : 'none'};">
+    <canvas id="wordcraft_canvas"></canvas>
+    <div id="wordcraft_loading">
+      <div class="wasm-spinner"></div>
+      <div style="font-weight: 700; font-size: 16px; margin-bottom: 6px; letter-spacing: -0.3px;">WordCraft 순수 Rust Native 엔진 초기화 중&hellip;</div>
+      <div style="font-size: 12px; color: #94a3b8; max-width: 480px; text-align: center; line-height: 1.6;">
+        HarfRust OpenType 텍스트 셰이핑 · 메트릭 호환 폰트 치환 · 422개 네이티브 워드 명령 완벽 지원
+      </div>
+    </div>
+  </div>
+  ` : ''}
+
+  <!-- ⚡ Lightweight DOM Editor View -->
+  <div id="lite-view" style="display: ${isWasmDefault ? 'none' : 'flex'};">
+    <div class="word-ribbon" style="border-top: none;">
+      <div style="display: flex; align-items: center; padding: 2px 14px; border-bottom: 1px solid var(--glass-border); background: var(--glass-panel);">
+        <nav class="ribbon-tabs" style="margin-left: 0;">
+          <button class="ribbon-tab-btn active" onclick="switchRibbonTab('panel-home')">홈 (Home)</button>
+          <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-insert')">삽입 (Insert)</button>
+          <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-layout')">레이아웃 (Layout)</button>
+          <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-review')">검토 (Review)</button>
+          <button class="ribbon-tab-btn" onclick="switchRibbonTab('panel-view')">보기 (View)</button>
+        </nav>
+      </div>
 
     <!-- Ribbon Panel 1: 홈 (Home) -->
     <div id="panel-home" class="ribbon-panel active">
@@ -899,6 +1066,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       <button class="btn-action" onclick="closeStatsModal()">닫기</button>
     </div>
   </div>
+  </div> <!-- /#lite-view -->
 
   <script>
     const vscode = acquireVsCodeApi();
@@ -907,6 +1075,55 @@ function renderWebviewHtml(docData, fileName, filePath) {
     let currentZoom = 1.0;
     let autoSaveTimer = null;
     let formatPainterState = null;
+    let currentEngine = '${isWasmDefault ? "wasm" : "lite"}';
+
+    // Direct Host Post Bridge for Pure Rust WASM Engine
+    window.__WORDCRAFT_VSCODE_POST__ = (msg) => {
+      vscode.postMessage(msg);
+    };
+
+    function switchEngine(engine) {
+      currentEngine = engine;
+      const wasmView = document.getElementById('wasm-view');
+      const liteView = document.getElementById('lite-view');
+      const btnWasm = document.getElementById('btn-engine-wasm');
+      const btnLite = document.getElementById('btn-engine-lite');
+
+      if (engine === 'wasm') {
+        if (wasmView) wasmView.style.display = 'block';
+        if (liteView) liteView.style.display = 'none';
+        if (btnWasm) btnWasm.classList.add('active');
+        if (btnLite) btnLite.classList.remove('active');
+      } else {
+        if (wasmView) wasmView.style.display = 'none';
+        if (liteView) liteView.style.display = 'flex';
+        if (btnWasm) btnWasm.classList.remove('active');
+        if (btnLite) btnLite.classList.add('active');
+      }
+    }
+
+    ${isWasmAvailable ? `
+    // Dynamically bootstrap pure Rust WASM Engine
+    (async () => {
+      try {
+        const mod = await import('${wasmConfig.wasmJsUri}');
+        const init = mod.default;
+        const wasm = await init({ module_or_path: '${wasmConfig.wasmBinaryUri}' });
+        window.wasmBindings = mod;
+        dispatchEvent(new CustomEvent("TrunkApplicationStarted", { detail: { wasm } }));
+      } catch (err) {
+        console.error("WASM startup error:", err);
+        const loading = document.getElementById('wordcraft_loading');
+        if (loading) {
+          loading.innerHTML = '<div style="color: #ef4444; font-weight: 700; font-size: 16px; margin-bottom: 8px;">⚠️ Rust WASM 엔진 실행 중 오류 발생</div><div style="font-size: 12px; color: #cbd5e1; max-width: 420px; text-align: center; margin-bottom: 14px;">' + err.message + '</div><button onclick="switchEngine(\\'lite\\')" style="padding: 6px 16px; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">⚡ 경량 웹 에디터로 전환</button>';
+        }
+      }
+    })();
+    ` : ''}
+
+    function toggleDarkPaper() {
+      toggleDarkPaperMode();
+    }
 
     // Switch Top Ribbon Tab
     function switchRibbonTab(panelId) {
@@ -1327,10 +1544,17 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     function triggerSave() {
-      vscode.postMessage({
-        type: 'save',
-        html: canvas.innerHTML
-      });
+      if (currentEngine === 'wasm') {
+        const wasmCanvas = document.getElementById('wordcraft_canvas');
+        if (wasmCanvas) {
+          wasmCanvas.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true, metaKey: true, bubbles: true }));
+        }
+      } else {
+        vscode.postMessage({
+          type: 'save',
+          html: canvas.innerHTML
+        });
+      }
     }
 
     function exportPdf() {
@@ -1378,6 +1602,8 @@ function renderWebviewHtml(docData, fileName, filePath) {
       const msg = event.data;
       if (msg.type === 'saved') {
         markSaved();
+      } else if (msg.type === 'requestSave') {
+        triggerSave();
       } else if (msg.type === 'requestSaveContent') {
         vscode.postMessage({
           type: 'saveContentResponse',

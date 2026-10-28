@@ -59,21 +59,23 @@ WordCraft는 전통적인 오피스 워드프로세서의 무겁고 각진 UI를
 
 | UI 컴포넌트 | 적용된 글래스 효과 | 시각적 특징 |
 |---|---|---|
-| **타이틀 바 (Title Bar)** | 울트라 씬 글래스 크롬 | 윈도우 배경과 문서 영역 사이를 부드럽게 연결하는 반투명 상단 바 |
+| **타이틀 바 (Title Bar)** | 울트라 씬 글래스 크롬 & 1px 스페큘러 경계선 | 윈도우 배경과 문서 영역 사이를 부드럽게 연결하는 반투명 상단 바 (`Stroke::new(1.0, t.border)`) |
 | **리본 툴바 (Ribbon)** | 프로스티드 아크릴 쉘 | 탭 전환 시 부드러운 틴트와 호버 시 은은한 유리 하이라이트 |
 | **사이드 패널 (Navigation/Styles)** | 스모키 글래스 패널 | 캔버스와 자연스럽게 분리되면서도 배경의 깊이를 머금는 측면 레일 |
 | **팝업 & 콘텍스트 메뉴** | 플로팅 글래스 카드 | 8px 코너 반경과 24px 확산 섀도우를 가진 유려한 플로팅 레이어 |
 | **다이얼로그 (Dialogs)** | 옵시디언 / 클리어 글래스 윈도우 | 깊이 있는 32px 앰비언트 섀도우와 미세한 유리 테두리 스트로크 |
 | **상태 표시줄 (Status Bar)** | 슬림 글래스 레일 | 하단에 가볍게 밀착되어 정보를 깔끔하게 제공 |
+| **VS Code 확장 듀얼 스위처** | 프로스티드 글래스 캡슐 | `[🚀 Rust Native]`와 `[⚡ 경량 에디터]`를 전환하는 입체 캡슐 디자인 |
 
 ---
 
-## 4. 토큰 및 비주얼 테마 구현 (`crates/ui-egui/src/theme.rs`)
+## 4. 토큰 및 비주얼 테마 구현 (`crates/ui-egui/src/theme.rs`, `chrome.rs`)
 
-WordCraft의 글래스 테마는 `Tokens`와 `visuals()` 함수를 통해 제어됩니다:
+WordCraft의 글래스 테마는 `Tokens`, `visuals()` 함수, `chrome.rs` 레이아웃을 통해 제어됩니다:
 
 - `visuals.window_corner_radius`: 부드러운 글래스 윈도우를 위해 `CornerRadius::same(10)` 적용.
 - `visuals.menu_corner_radius`: 팝업 메뉴 및 드롭다운을 위해 `CornerRadius::same(8)` 적용.
 - `visuals.widgets.*.corner_radius`: 입력 컨트롤과 버튼에 `CornerRadius::same(6)` 적용.
 - `visuals.popup_shadow`: `blur: 24, spread: 1`의 글래스모피즘 확산 섀도우.
 - `visuals.window_shadow`: `blur: 32, spread: 2`의 입체적 앰비언트 섀도우.
+- `chrome::title_bar` & `chrome::status_bar`: 1px 정밀 미세 스페큘러 경계선(`Stroke::new(1.0, t.border)`)으로 크롬 레이어의 공간적 분리감 확보.

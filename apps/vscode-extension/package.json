@@ -2,7 +2,7 @@
   "name": "open-word",
   "displayName": "Open Word - Word Processor for Visual Studio Code",
   "description": "Full-featured Microsoft Word processor directly inside VS Code. Edit .docx with Frosted Glass ribbon, fonts, tables, styles, Korean IME, and live two-way save.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "iamywl",
   "engines": {
     "vscode": "^1.80.0"
@@ -126,6 +126,12 @@
           "type": "string",
           "default": "",
           "description": "Absolute path to custom WordCraft CLI binary (wordcraft-cli or wordcraft-cli.exe)."
+        },
+        "open-word.defaultEngine": {
+          "type": "string",
+          "enum": ["wasm", "lite"],
+          "default": "wasm",
+          "description": "Default editing engine: 'wasm' (100% Pure Rust Native Engine with HarfRust Typography & Metric Parity) or 'lite' (Lightweight Fast Web Editor)."
         }
       }
     }

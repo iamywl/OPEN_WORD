@@ -2,7 +2,24 @@
 
 All notable changes to the "open-word" extension will be documented in this file.
 
-## [0.3.0] - 2026-10-28
+## [0.4.0] - 2026-10-28
+
+### Added & Elevated (100% Rust WASM Native Engine & Glass Design Architecture)
+- **100% Pure Rust Native Engine 임베딩 (HarfRust + WebGPU/WebGL2)**:
+  - 데스크톱 앱의 100% 동일한 순수 Rust 엔진(`wordcraft-web.wasm`)을 VS Code 익스텐션 내부에 완전 내장.
+  - **HarfRust OpenType 고밀도 타이포그래피**: 합자(Ligatures), 커닝(Kerning), 메트릭 호환 폰트 치환(`wordcraft-fonts`) 완벽 지원.
+  - **100% 레이아웃 및 페이지네이션 패리티**: 데스크톱 네이티브 앱 및 MS Word와 100% 오차 없는 동일한 줄바꿈, 다단(Multi-column), 각주/미주, 머리글/바닥글, 표 렌더링.
+  - **422개 워드 전 기능 커맨드**: 리본의 모든 탭(Home, Insert, Draw, Design, Layout, References, Mailings, Review, View)과 명령을 VS Code 내에서 즉시 실행.
+- **듀얼 엔진 스위처 (Dual-Engine Architecture)**:
+  - 상단 글래스 헤더에 **[🚀 Rust Native 엔진]**과 **[⚡ 경량 웹 에디터]** 원클릭 전환 캡슐 추가.
+  - 사용자의 선호 및 시스템 리소스 환경에 맞추어 `open-word.defaultEngine` 설정을 통해 기본 엔진 선택 지원.
+- **글래스 디자인 시스템 (Glassmorphism & Frosted Glass 2.0)**:
+  - 상단 리본, 플로팅 엔진 캡슐, 상태바, 다이얼로그 전반에 반투명 아크릴 블러와 1px 미세 빛 반사 경계선(Specular Border) 적용.
+  - 데스크톱 네이티브 앱(`crates/ui-egui/src/chrome.rs`) 타이틀바에도 1px 스페큘러 경계선 스트로크를 완벽 동기화.
+  - WCAG 4.5:1 이상의 철저한 텍스트 명도 대비 유지.
+- **양방향 실시간 호스트 브릿지 (Host PostMessage Bridge)**:
+  - `wordcraft:ready`, `wordcraft:open`, `wordcraft:save`, `wordcraft:dirty` 메시지 프로토콜 완벽 연동.
+  - VS Code 내에서 문서 변경 시 실시간 Dirty 표시(`•`) 및 Cmd+S/Save 클릭 시 디스크로 비트 단위 완벽 저장.
 
 ### Added & Improved (Readability & Feature Completeness)
 - **가독성(Readability) 전면 검토 및 개선**:

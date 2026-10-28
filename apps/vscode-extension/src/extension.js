@@ -30,6 +30,28 @@ class DocxCustomDocument extends vscode.Disposable {
 }
 
 /**
+ * Locate the compiled WebAssembly distribution if available.
+ */
+function getWasmConfig(context, webviewPanel) {
+  const wasmDir = path.join(context.extensionPath, 'wasm');
+  if (!fs.existsSync(wasmDir)) return { available: false };
+  const files = fs.readdirSync(wasmDir);
+  const wasmFile = files.find(f => f.endsWith('.wasm'));
+  const jsFile = files.find(f => f.endsWith('.js') && f.startsWith('wordcraft-web-'));
+  if (!wasmFile || !jsFile) return { available: false };
+
+  const config = vscode.workspace.getConfiguration('open-word');
+  const defaultEngine = config.get('defaultEngine', 'wasm');
+
+  return {
+    available: true,
+    defaultEngine,
+    wasmBinaryUri: webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(wasmDir, wasmFile))).toString(),
+    wasmJsUri: webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(wasmDir, jsFile))).toString(),
+  };
+}
+
+/**
  * Locate the native WordCraft desktop executable if available.
  */
 function findNativeBinary() {
@@ -128,12 +150,49 @@ class DocxCustomEditorProvider {
       ]
     };
 
-    // Render Full Word Processor Webview
-    webviewPanel.webview.html = renderWebviewHtml(document.docData, fileName, filePath);
+    const wasmConfig = getWasmConfig(this.context, webviewPanel);
+
+    // Render Full Word Processor Webview (Dual Engine: Rust WASM + Lightweight Fast Mode)
+    webviewPanel.webview.html = renderWebviewHtml(document.docData, fileName, filePath, wasmConfig);
 
     // Handle messages from the Webview
     webviewPanel.webview.onDidReceiveMessage(async (message) => {
       switch (message.type) {
+        case 'wordcraft:ready':
+          // The pure Rust WASM engine is initialized and listening! Feed the document bytes.
+          webviewPanel.webview.postMessage({
+            type: 'wordcraft:open',
+            name: fileName,
+            bytes: Array.from(document.originalBuffer)
+          });
+          break;
+
+        case 'wordcraft:save':
+          // The pure Rust engine saved the document in full ECMA-376 OOXML fidelity!
+          try {
+            const buf = Buffer.from(message.bytes);
+            fs.writeFileSync(filePath, buf);
+            document.originalBuffer = buf;
+            document._isDirty = false;
+            vscode.window.setStatusBarMessage(`Open Word: ${fileName} 저장 완료 (Rust Native Engine)`, 3000);
+          } catch (err) {
+            vscode.window.showErrorMessage(`문서 저장 실패: ${err.message}`);
+          }
+          break;
+
+        case 'wordcraft:dirty':
+          document._isDirty = !!message.dirty;
+          this._onDidChangeCustomDocument.fire({
+            document,
+            undo: () => {},
+            redo: () => {}
+          });
+          break;
+
+        case 'wordcraft:failed':
+          vscode.window.showWarningMessage(`WordCraft WASM 가속 실행 불가 (${message.error}). 경량 모드로 자동 전환합니다.`);
+          break;
+
         case 'contentChange':
           document.currentHtml = message.html;
           this._onDidChangeCustomDocument.fire({

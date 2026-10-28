@@ -1,27 +1,15 @@
-//! The `postMessage` bridge to a same-origin parent page (`?host=parent`), for pages that embed
-//! WordCraft in an `<iframe>` and keep its files (a Nextcloud app, a personal file server). The
-//! same messages as GridCraft's and PdfCraft's bridges; each is a plain object with a `type`:
+//! The `postMessage` bridge to a same-origin parent page (`?host=parent`) or VS Code (`?host=vscode`),
+//! for pages that embed WordCraft in an `<iframe>` or VS Code Webview and keep its files.
+//! The same messages as GridCraft's and PdfCraft's bridges; each is a plain object with a `type`:
 //!
-//! - `wordcraft:ready` (to the parent): `{ version }`, sent once the app is running and
+//! - `wordcraft:ready` (to the parent/VS Code): `{ version }`, sent once the app is running and
 //!   listening; send a file now.
-//! - `wordcraft:open` (from the parent): `{ name, bytes }`, bytes an `ArrayBuffer` or
+//! - `wordcraft:open` (from the parent/VS Code): `{ name, bytes }`, bytes an `ArrayBuffer` or
 //!   `Uint8Array`. It opens like a document picked with File › Open or dropped on the window.
-//! - `wordcraft:save` (to the parent): `{ name, saveAs, bytes }` (a transferred `ArrayBuffer`) for
-//!   every file WordCraft would otherwise download. The parent stores it and reports failures
-//!   itself. `saveAs` says whether the file becomes the document's file:
-//!   - Save: `false`. It writes the opened file under its own name and format, as the desktop
-//!     app does. A name the parent never sent (an untitled document, an imported .doc saved as
-//!     .docx) is a new file: `true`, as for Save As.
-//!   - Save As, and File › Export to another document format (which runs Save As): `true` for a
-//!     format that keeps everything (.docx and the other Word packages, .odt, .rtf). The document
-//!     is now that file; the next Save sends its name with `false`.
-//!   - Save As or Export to a format that doesn't (PDF, Markdown, plain text), Export as PDF and
-//!     Export Page as PNG: `false`. They are copies; the document's file stays the same.
-//! - `wordcraft:dirty` (to the parent): `{ dirty }` whenever unsaved changes appear or go away.
-//! - `wordcraft:failed` (to the parent): `{ error }` when the app couldn't start.
-//!
-//! Only the parent window on the page's own origin is heard or answered. In host mode the parent
-//! guards leaving the page, and `?author=` names the user for comments and tracked changes.
+//! - `wordcraft:save` (to the parent/VS Code): `{ name, saveAs, bytes }` (a transferred `ArrayBuffer`) for
+//!   every file WordCraft would otherwise download. The parent/VS Code stores it and reports failures.
+//! - `wordcraft:dirty` (to the parent/VS Code): `{ dirty }` whenever unsaved changes appear or go away.
+//! - `wordcraft:failed` (to the parent/VS Code): `{ error }` when the app couldn't start.
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -37,16 +25,29 @@ const MAX_AUTHOR_CHARS: usize = 200;
 #[derive(Clone)]
 pub struct Bridge {
     window: web_sys::Window,
-    parent: web_sys::Window,
-    origin: String,
+    parent: Option<web_sys::Window>,
+    origin: Option<String>,
+    vscode_post: Option<js_sys::Function>,
 }
 
 impl Bridge {
-    /// `None` when the page isn't framed (there is no parent to talk to), or when the parent is
-    /// on another origin: messages only go to this origin, so the browser would drop every save
-    /// without an error while the document showed as saved.
+    /// Connects to a host: either VS Code (`window.__WORDCRAFT_VSCODE_POST__`) or a same-origin parent frame.
     pub fn new() -> Option<Self> {
         let window = web_sys::window()?;
+
+        // 1. Check for direct VS Code Webview bridge
+        if let Ok(val) = js_sys::Reflect::get(&window, &JsValue::from_str("__WORDCRAFT_VSCODE_POST__"))
+            && let Ok(func) = val.dyn_into::<js_sys::Function>()
+        {
+            return Some(Self {
+                window,
+                parent: None,
+                origin: None,
+                vscode_post: Some(func),
+            });
+        }
+
+        // 2. Check for framed parent window
         let parent = window.parent().ok().flatten()?;
         if js_sys::Object::is(&parent, &window) {
             return None;
@@ -60,16 +61,21 @@ impl Bridge {
         if parent.location().origin().ok()? != origin {
             return None;
         }
-        Some(Self { window, parent, origin })
+        Some(Self {
+            window,
+            parent: Some(parent),
+            origin: Some(origin),
+            vscode_post: None,
+        })
     }
 
-    /// Hand saved and exported files to the parent instead of downloading them, report unsaved
+    /// Hand saved and exported files to the host instead of downloading them, report unsaved
     /// changes to it, and hear the files it sends.
     pub fn connect(&self, services: &mut Services, inbox: Inbox, ctx: egui::Context) {
         self.listen(inbox, ctx);
         let bridge = self.clone();
         services.host_save = Some(Box::new(move |name: &str, bytes: &[u8], save_as: bool| bridge.post_save(name, bytes, save_as)));
-        // Anything else that would download goes to the parent too.
+        // Anything else that would download goes to the host too.
         let bridge = self.clone();
         services.download = Some(Box::new(move |name: &str, bytes: &[u8]| bridge.post_save(name, bytes, false)));
         // The browser's save picker is never used, so no save finishes later.
@@ -91,11 +97,15 @@ impl Bridge {
         }
     }
 
+    pub fn is_vscode(&self) -> bool {
+        self.vscode_post.is_some()
+    }
+
     pub fn post_ready(&self) {
         self.send(&[("type", "wordcraft:ready".into()), ("version", env!("CARGO_PKG_VERSION").into())]);
     }
 
-    /// The app couldn't start (no WebGPU or WebGL2, for example): let the parent say so.
+    /// The app couldn't start (no WebGPU or WebGL2, for example): let the host say so.
     pub fn post_failed(&self, error: &str) {
         self.send(&[("type", "wordcraft:failed".into()), ("error", error.into())]);
     }
@@ -110,18 +120,36 @@ impl Bridge {
             ("bytes", buffer.clone().into()),
         ])
         .ok_or_else(|| "couldn't build the message".to_string())?;
-        self.parent
-            .post_message_with_transfer(&message, &self.origin, &js_sys::Array::of1(&buffer))
-            .map_err(|e| e.as_string().unwrap_or_else(|| format!("{e:?}")))
+
+        // If VS Code direct post
+        if let Some(post) = &self.vscode_post {
+            return post.call1(&JsValue::NULL, &message).map(|_| ()).map_err(|e| format!("{e:?}"));
+        }
+
+        // If parent frame
+        if let (Some(parent), Some(origin)) = (&self.parent, &self.origin) {
+            return parent
+                .post_message_with_transfer(&message, origin, &js_sys::Array::of1(&buffer))
+                .map_err(|e| e.as_string().unwrap_or_else(|| format!("{e:?}")));
+        }
+
+        Err("no host available to save".to_string())
     }
 
-    /// Hear `wordcraft:open` from the parent and queue the file like a dropped one.
+    /// Hear `wordcraft:open` from the host and queue the file like a dropped one.
     fn listen(&self, inbox: Inbox, ctx: egui::Context) {
         let parent = self.parent.clone();
         let origin = self.origin.clone();
+        let is_vscode = self.vscode_post.is_some();
         let on_message = Closure::<dyn FnMut(web_sys::MessageEvent)>::new(move |event: web_sys::MessageEvent| {
-            if event.origin() != origin || !event.source().is_some_and(|s| js_sys::Object::is(&s, &parent)) {
-                return;
+            if !is_vscode {
+                if let (Some(origin), Some(parent)) = (&origin, &parent) {
+                    if event.origin() != *origin || !event.source().is_some_and(|s| js_sys::Object::is(&s, parent)) {
+                        return;
+                    }
+                } else {
+                    return;
+                }
             }
             let data = event.data();
             if string(&data, "type").as_deref() != Some("wordcraft:open") {
@@ -138,9 +166,16 @@ impl Bridge {
         }
     }
 
-    /// Post a message to the parent; false if it couldn't be sent.
+    /// Post a message to the host; false if it couldn't be sent.
     fn send(&self, fields: &[(&str, JsValue)]) -> bool {
-        message(fields).is_some_and(|m| self.parent.post_message(&m, &self.origin).is_ok())
+        let Some(m) = message(fields) else { return false };
+        if let Some(post) = &self.vscode_post {
+            return post.call1(&JsValue::NULL, &m).is_ok();
+        }
+        if let (Some(parent), Some(origin)) = (&self.parent, &self.origin) {
+            return parent.post_message(&m, origin).is_ok();
+        }
+        false
     }
 }
 
@@ -163,6 +198,14 @@ fn bytes(data: &JsValue) -> Option<Vec<u8>> {
         Some(array.to_vec())
     } else if bytes.is_instance_of::<js_sys::ArrayBuffer>() {
         Some(js_sys::Uint8Array::new(&bytes).to_vec())
+    } else if js_sys::Array::is_array(&bytes) {
+        let arr = js_sys::Array::from(&bytes);
+        let len = arr.length() as usize;
+        let mut v = Vec::with_capacity(len);
+        for i in 0..arr.length() {
+            v.push(arr.get(i).as_f64()? as u8);
+        }
+        Some(v)
     } else {
         None
     }

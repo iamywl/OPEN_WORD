@@ -287,7 +287,7 @@ pub fn title_bar(app: &mut WordApp, ui: &mut Ui) {
     let control_h = if mac { 22.0 } else { 26.0 };
     egui::Panel::top("title_bar")
         .exact_size(if mac { bar.height } else { 38.0 })
-        .frame(egui::Frame::NONE.fill(t.title_bar).inner_margin(egui::Margin { left, right: 10, top: 0, bottom: 0 }))
+        .frame(egui::Frame::NONE.fill(t.title_bar).inner_margin(egui::Margin { left, right: 10, top: 0, bottom: 0 }).stroke(Stroke::new(1.0, t.border)))
         .show(ui, |ui| {
             let full = ui.max_rect();
             // Drag the window by the title bar (integrated title bar on macOS).

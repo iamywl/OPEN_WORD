@@ -29,7 +29,19 @@ pub fn start() {
         };
         // `?host=parent`: a same-origin page framing WordCraft opens documents in it and stores
         // what it saves (`host`). That page guards leaving it, so this one doesn't.
-        let bridge = if query_param("host").as_deref() == Some("parent") { crate::host::Bridge::new() } else { None };
+        // `?host=vscode` or `__WORDCRAFT_VSCODE_POST__`: direct VS Code Webview host bridge.
+        let host_param = query_param("host");
+        let bridge = if host_param.as_deref() == Some("parent") || host_param.as_deref() == Some("vscode") {
+            crate::host::Bridge::new()
+        } else if let Some(b) = crate::host::Bridge::new() {
+            if b.is_vscode() {
+                Some(b)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
         let app_bridge = bridge.clone();
         let dirty = Rc::new(Cell::new(false));
         let saves = AsyncSaves::default();
