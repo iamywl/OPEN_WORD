@@ -2,6 +2,20 @@
 
 All notable changes to the "open-word" extension will be documented in this file.
 
+## [0.2.0] - 2026-10-28
+
+### Added
+- **Full Word Processor in VS Code**: Complete Word editing experience directly inside VS Code custom editor.
+- **Frosted Glass Ribbon (글래스 리본)**:
+  - **Home Tab**: Undo/Redo, Font Family, Font Size, Grow/Shrink, Bold, Italic, Underline, Strike, Sub/Superscript, Text/Highlight Color, Clear Format, Bullet/Number Lists, Indent/Outdent, Left/Center/Right/Justify, Style Gallery, Find & Replace.
+  - **Insert Tab**: Tables (interactive rows/cols insert, add/delete row/col), Links, Symbols (•, ※, ★, ✓), Date/Time, Horizontal Rules.
+  - **Layout Tab**: Margins (Normal, Narrow, Wide), Orientation (Portrait / Landscape).
+  - **Review Tab**: Word Count, Character Count, Paragraph Count, Markdown extraction.
+  - **View Tab**: Print Layout (A4 Sheet) vs Web Layout, Ruler toggle, Zoom (50%~200%).
+- **Interactive Ruler**: Visual Word ruler above canvas.
+- **Two-Way .docx Sync & Save**: Editing marks tab dirty (`•`), and `Cmd+S` or Save button re-packs and writes changes directly back to the `.docx` file on disk.
+- **Full Korean IME Support**: Flawless Korean typing (`한글 자모/완성형 조합`) without losing focus or glyphs.
+
 ## [0.1.1] - 2026-10-28
 
 ### Fixed

@@ -1,8 +1,8 @@
 {
   "name": "open-word",
-  "displayName": "Open Word (.docx viewer & editor)",
-  "description": "High-performance .docx word processor. View documents in VS Code with frosted glass UI, export to PDF, extract text, and launch native macOS Metal & Windows DirectX desktop app.",
-  "version": "0.1.1",
+  "displayName": "Open Word - Word Processor for Visual Studio Code",
+  "description": "Full-featured Microsoft Word processor directly inside VS Code. Edit .docx with Frosted Glass ribbon, fonts, tables, styles, Korean IME, and live two-way save.",
+  "version": "0.2.0",
   "publisher": "iamywl",
   "engines": {
     "vscode": "^1.80.0"
