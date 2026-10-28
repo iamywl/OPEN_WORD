@@ -134,11 +134,14 @@ function htmlToDocxXml(html) {
     const attrs = match[2];
     const inner = match[3];
 
+    const align = getAlignFromAttrs(attrs);
+    const lineHeight = getLineHeightFromAttrs(attrs);
+
     if (tag.startsWith('h')) {
       const level = tag.substring(1);
-      const align = getAlignFromAttrs(attrs);
       xml += `  <w:p>\n    <w:pPr>\n      <w:pStyle w:val="Heading${level}"/>\n`;
       if (align) xml += `      <w:jc w:val="${align}"/>\n`;
+      if (lineHeight) xml += `      <w:spacing w:line="${Math.round(lineHeight * 240)}" w:lineRule="auto"/>\n`;
       xml += `    </w:pPr>\n`;
       xml += parseRunsToXml(inner, { bold: true });
       xml += `  </w:p>\n`;
@@ -146,21 +149,26 @@ function htmlToDocxXml(html) {
       xml += parseTableToXml(inner);
     } else if (tag === 'ul' || tag === 'ol') {
       const isOrdered = tag === 'ol';
-      const liRegex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+      const liRegex = /<li([^>]*)>([\s\S]*?)<\/li>/gi;
       let liMatch;
       while ((liMatch = liRegex.exec(inner)) !== null) {
+        const liAttrs = liMatch[1];
+        const liAlign = getAlignFromAttrs(liAttrs) || align;
         xml += `  <w:p>\n    <w:pPr>\n`;
         xml += `      <w:numPr><w:ilvl w:val="0"/><w:numId w:val="${isOrdered ? 2 : 1}"/></w:numPr>\n`;
+        if (liAlign) xml += `      <w:jc w:val="${liAlign}"/>\n`;
         xml += `    </w:pPr>\n`;
-        xml += parseRunsToXml(liMatch[1]);
+        xml += parseRunsToXml(liMatch[2]);
         xml += `  </w:p>\n`;
       }
     } else {
       // Paragraph or div or blockquote
-      const align = getAlignFromAttrs(attrs);
       xml += `  <w:p>\n`;
-      if (align) {
-        xml += `    <w:pPr><w:jc w:val="${align}"/></w:pPr>\n`;
+      if (align || lineHeight) {
+        xml += `    <w:pPr>\n`;
+        if (align) xml += `      <w:jc w:val="${align}"/>\n`;
+        if (lineHeight) xml += `      <w:spacing w:line="${Math.round(lineHeight * 240)}" w:lineRule="auto"/>\n`;
+        xml += `    </w:pPr>\n`;
       }
       xml += parseRunsToXml(inner);
       xml += `  </w:p>\n`;
@@ -197,17 +205,27 @@ function getAlignFromAttrs(attrs) {
   return null;
 }
 
+function getLineHeightFromAttrs(attrs) {
+  if (!attrs) return null;
+  const m = attrs.match(/line-height:\s*(\d+(?:\.\d+)?)/i);
+  if (m) {
+    const val = parseFloat(m[1]);
+    if (val >= 0.8 && val <= 4.0) return val;
+  }
+  return null;
+}
+
 function parseTableToXml(tblInner) {
   let xml = `  <w:tbl>\n` +
     `    <w:tblPr>\n` +
     `      <w:tblW w:w="0" w:type="auto"/>\n` +
     `      <w:tblBorders>\n` +
-    `        <w:top w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/>\n` +
-    `        <w:left w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/>\n` +
-    `        <w:bottom w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/>\n` +
-    `        <w:right w:val="single" w:sz="4" w:space="0" w:color="CCCCCC"/>\n` +
-    `        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="E2E8F0"/>\n` +
-    `        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="E2E8F0"/>\n` +
+    `        <w:top w:val="single" w:sz="6" w:space="0" w:color="94A3B8"/>\n` +
+    `        <w:left w:val="single" w:sz="6" w:space="0" w:color="94A3B8"/>\n` +
+    `        <w:bottom w:val="single" w:sz="6" w:space="0" w:color="94A3B8"/>\n` +
+    `        <w:right w:val="single" w:sz="6" w:space="0" w:color="94A3B8"/>\n` +
+    `        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>\n` +
+    `        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="CBD5E1"/>\n` +
     `      </w:tblBorders>\n` +
     `    </w:tblPr>\n`;
 
@@ -219,8 +237,23 @@ function parseTableToXml(tblInner) {
     let cellMatch;
     while ((cellMatch = cellRegex.exec(trMatch[1])) !== null) {
       const isHeader = cellMatch[1].toLowerCase() === 'th';
+      const cellAttrs = cellMatch[2];
       const cellContent = cellMatch[3];
-      xml += `      <w:tc>\n        <w:tcPr><w:tcW w:w="0" w:type="auto"/></w:tcPr>\n`;
+
+      let cellShading = isHeader ? 'F1F5F9' : null;
+      if (cellAttrs) {
+        const bgMatch = cellAttrs.match(/background(?:-color)?:\s*([^;"]+)/i) || cellAttrs.match(/bgcolor="([^"]+)"/i);
+        if (bgMatch) {
+          const parsed = parseColor(bgMatch[1]);
+          if (parsed) cellShading = parsed.replace('#', '').toUpperCase();
+        }
+      }
+
+      xml += `      <w:tc>\n        <w:tcPr>\n          <w:tcW w:w="0" w:type="auto"/>\n`;
+      if (cellShading) {
+        xml += `          <w:shd w:val="clear" w:color="auto" w:fill="${cellShading}"/>\n`;
+      }
+      xml += `        </w:tcPr>\n`;
       xml += `        <w:p>\n`;
       xml += parseRunsToXml(cellContent, { bold: isHeader });
       xml += `        </w:p>\n      </w:tc>\n`;
@@ -233,7 +266,7 @@ function parseTableToXml(tblInner) {
 
 function parseRunsToXml(htmlSnippet, defaults = {}) {
   let xml = '';
-  // Tokenize text and inline tags: strong, b, em, i, u, s, del, span, font, sub, sup
+  // Tokenize text and inline tags: strong, b, em, i, u, s, del, span, font, sub, sup, img
   const runTokens = tokenizeInline(htmlSnippet, defaults);
   for (const t of runTokens) {
     if (!t.text) continue;
@@ -246,6 +279,12 @@ function parseRunsToXml(htmlSnippet, defaults = {}) {
       const hex = t.color.replace('#', '').toUpperCase();
       if (/^[0-9A-F]{6}$/.test(hex)) {
         xml += `        <w:color w:val="${hex}"/>\n`;
+      }
+    }
+    if (t.highlight) {
+      const hex = t.highlight.replace('#', '').toUpperCase();
+      if (/^[0-9A-F]{6}$/.test(hex)) {
+        xml += `        <w:shd w:val="clear" w:color="auto" w:fill="${hex}"/>\n`;
       }
     }
     if (t.fontSize) {
@@ -265,7 +304,6 @@ function parseRunsToXml(htmlSnippet, defaults = {}) {
 }
 
 function tokenizeInline(htmlSnippet, defaults) {
-  // Simple regex parser for inline HTML elements
   const tokens = [];
   const tagRegex = /<(\/?[a-z0-9]+)([^>]*)>|([^<]+)/gi;
   let match;
@@ -276,6 +314,7 @@ function tokenizeInline(htmlSnippet, defaults) {
     underline: false,
     strike: false,
     color: null,
+    highlight: null,
     fontSize: null,
     fontFamily: null,
     sub: false,
@@ -309,8 +348,13 @@ function tokenizeInline(htmlSnippet, defaults) {
         if (attrs) {
           const colorMatch = attrs.match(/color:\s*(#[0-9a-f]{3,6}|rgb\([^)]+\)|[a-z]+)/i);
           if (colorMatch) next.color = parseColor(colorMatch[1]);
+
+          const bgMatch = attrs.match(/background(?:-color)?:\s*(#[0-9a-f]{3,6}|rgb\([^)]+\)|[a-z]+)/i);
+          if (bgMatch) next.highlight = parseColor(bgMatch[1]);
+
           const fontMatch = attrs.match(/font-family:\s*([^;"]+)/i);
           if (fontMatch) next.fontFamily = fontMatch[1].replace(/['"]/g, '').trim();
+
           const sizeMatch = attrs.match(/font-size:\s*(\d+(?:\.\d+)?)(pt|px)/i);
           if (sizeMatch) {
             let pt = parseFloat(sizeMatch[1]);

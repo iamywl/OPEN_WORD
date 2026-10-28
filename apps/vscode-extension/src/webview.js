@@ -1,4 +1,4 @@
-// Full Word Processor Webview Generator for Visual Studio Code (Open Word)
+// High-Readability Full Word Processor Webview Generator for Visual Studio Code (Open Word)
 const { escapeHtml } = require('./docx-parser');
 
 function renderWebviewHtml(docData, fileName, filePath) {
@@ -66,34 +66,61 @@ function renderWebviewHtml(docData, fileName, filePath) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(title)} - Open Word</title>
   <style>
+    /* WCAG 4.5:1+ Compliant High-Readability Glass Design System */
     :root {
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-panel: rgba(25, 30, 42, 0.78);
-      --glass-border: rgba(255, 255, 255, 0.14);
-      --glass-specular: rgba(255, 255, 255, 0.28);
+      --glass-panel: rgba(22, 27, 38, 0.88);
+      --glass-surface: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-specular: rgba(255, 255, 255, 0.35);
       --glass-blur: blur(24px) saturate(190%);
-      --glass-shadow: 0 10px 32px 0 rgba(0, 0, 0, 0.38);
-      --accent: #2b7fff;
+      --glass-shadow: 0 10px 32px 0 rgba(0, 0, 0, 0.45);
+      --accent: #2563eb;
       --accent-hover: #3b82f6;
+      --accent-active: #1d4ed8;
+      
+      /* Solid High-Contrast Paper (Readability First) */
       --paper-bg: #ffffff;
-      --paper-color: #1e293b;
+      --paper-color: #0f172a; /* Slate 900: 19.8:1 contrast on white */
       --paper-shadow: 0 14px 45px rgba(0, 0, 0, 0.45);
-      --ruler-bg: rgba(0, 0, 0, 0.15);
+      --table-border: #94a3b8; /* Slate 400: 3.2:1 contrast */
+      --table-header-bg: #f1f5f9;
+      --ruler-bg: rgba(15, 23, 42, 0.7);
+      --ruler-color: #e2e8f0;
+      
+      --ui-text: #f8fafc;
+      --ui-subtext: #cbd5e1;
       --radius-sm: 6px;
       --radius-md: 10px;
       --font-stack: "Apple SD Gothic Neo", "Malgun Gothic", "NanumGothic", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
     }
 
+    /* Light Theme Optimization */
     body.vscode-light {
-      --glass-bg: rgba(255, 255, 255, 0.75);
-      --glass-panel: rgba(248, 250, 252, 0.88);
-      --glass-border: rgba(0, 0, 0, 0.1);
-      --glass-specular: rgba(255, 255, 255, 0.95);
+      --glass-panel: rgba(248, 250, 252, 0.94);
+      --glass-surface: rgba(0, 0, 0, 0.05);
+      --glass-border: rgba(0, 0, 0, 0.14);
+      --glass-specular: rgba(255, 255, 255, 0.98);
       --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      
       --paper-bg: #ffffff;
       --paper-color: #0f172a;
       --paper-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-      --ruler-bg: #f1f5f9;
+      --table-border: #cbd5e1;
+      --table-header-bg: #f8fafc;
+      --ruler-bg: #e2e8f0;
+      --ruler-color: #334155;
+      
+      --ui-text: #0f172a;
+      --ui-subtext: #475569;
+    }
+
+    /* Eye-Comfort Dark Paper Mode */
+    body.dark-paper-mode {
+      --paper-bg: #181b24;
+      --paper-color: #f1f5f9; /* 15.2:1 contrast */
+      --paper-shadow: 0 14px 45px rgba(0, 0, 0, 0.65);
+      --table-border: #334155;
+      --table-header-bg: #1e293b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,7 +128,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
     body {
       font-family: var(--font-stack);
       background-color: var(--vscode-editor-background);
-      color: var(--vscode-editor-foreground);
+      color: var(--ui-text);
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -109,18 +136,18 @@ function renderWebviewHtml(docData, fileName, filePath) {
       user-select: none;
     }
 
-    /* Ambient background gradient */
+    /* Subtle ambient glow */
     .ambient-glow {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: 
-        radial-gradient(circle at 10% 10%, rgba(43, 127, 255, 0.07) 0%, transparent 40%),
-        radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.07) 0%, transparent 40%);
+        radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, rgba(124, 58, 237, 0.06) 0%, transparent 45%);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Top Frosted Glass Ribbon Header */
+    /* Top Word Ribbon */
     .word-ribbon {
       position: relative;
       z-index: 50;
@@ -133,13 +160,13 @@ function renderWebviewHtml(docData, fileName, filePath) {
       flex-direction: column;
     }
 
-    /* Ribbon Top Row: Title, Tabs & Quick Actions */
+    /* Ribbon Row 1: Brand, Tabs, Save & Quick Actions */
     .ribbon-top-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 6px 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .brand-group {
@@ -165,6 +192,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
     .doc-name {
       font-size: 13px;
       font-weight: 600;
+      color: var(--ui-text);
       max-width: 260px;
       white-space: nowrap;
       overflow: hidden;
@@ -180,32 +208,31 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .save-indicator.saved {
-      background: rgba(16, 185, 129, 0.15);
+      background: rgba(16, 185, 129, 0.2);
       color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      border: 1px solid rgba(16, 185, 129, 0.4);
     }
 
     .save-indicator.dirty {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(245, 158, 11, 0.2);
       color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.3);
+      border: 1px solid rgba(245, 158, 11, 0.4);
     }
 
-    /* Tab Buttons */
+    /* Ribbon Tabs */
     .ribbon-tabs {
       display: flex;
-      gap: 2px;
-      margin-left: 20px;
+      gap: 3px;
+      margin-left: 16px;
     }
 
     .ribbon-tab-btn {
       background: transparent;
       border: none;
-      color: inherit;
-      opacity: 0.75;
+      color: var(--ui-subtext);
       font-size: 12px;
-      font-weight: 500;
-      padding: 5px 14px;
+      font-weight: 600;
+      padding: 6px 14px;
       border-radius: var(--radius-sm) var(--radius-sm) 0 0;
       cursor: pointer;
       transition: all 0.15s ease;
@@ -213,14 +240,13 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .ribbon-tab-btn:hover {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.08);
+      color: var(--ui-text);
+      background: var(--glass-surface);
     }
 
     .ribbon-tab-btn.active {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.16);
-      font-weight: 600;
+      color: var(--ui-text);
+      background: rgba(37, 99, 235, 0.15);
       border-bottom: 2px solid var(--accent);
     }
 
@@ -231,18 +257,18 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .btn-action {
-      background: var(--glass-bg);
+      background: var(--glass-surface);
       border: 1px solid var(--glass-border);
       border-top: 1px solid var(--glass-specular);
-      color: inherit;
+      color: var(--ui-text);
       font-size: 12px;
-      font-weight: 500;
-      padding: 5px 10px;
+      font-weight: 600;
+      padding: 5px 11px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       transition: all 0.15s ease;
       font-family: inherit;
     }
@@ -254,16 +280,17 @@ function renderWebviewHtml(docData, fileName, filePath) {
 
     .btn-save {
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      color: #fff;
-      font-weight: 600;
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
     }
 
     /* Ribbon Toolbar Panels */
     .ribbon-panel {
       display: none;
-      padding: 8px 14px;
-      background: rgba(0, 0, 0, 0.08);
+      padding: 7px 14px;
+      background: rgba(0, 0, 0, 0.1);
       overflow-x: auto;
       white-space: nowrap;
     }
@@ -271,15 +298,15 @@ function renderWebviewHtml(docData, fileName, filePath) {
     .ribbon-panel.active {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
 
     .toolbar-group {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding-right: 14px;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding-right: 12px;
+      border-right: 1px solid var(--glass-border);
     }
 
     .toolbar-group:last-child {
@@ -289,11 +316,12 @@ function renderWebviewHtml(docData, fileName, filePath) {
     .tool-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: inherit;
+      color: var(--ui-text);
       padding: 5px 8px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       font-size: 13px;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -304,24 +332,26 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .tool-btn:hover {
-      background: rgba(255, 255, 255, 0.14);
+      background: var(--glass-surface);
       border-color: var(--glass-border);
     }
 
     .tool-btn.active {
-      background: rgba(43, 127, 255, 0.25);
+      background: rgba(37, 99, 235, 0.28);
       border-color: var(--accent);
       color: #3b82f6;
-      font-weight: 700;
+      font-weight: 800;
     }
 
+    /* High-Readability Dropdown Selects */
     .tool-select {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.28);
       border: 1px solid var(--glass-border);
-      color: inherit;
+      color: var(--ui-text);
       padding: 4px 8px;
       border-radius: var(--radius-sm);
       font-size: 12px;
+      font-weight: 600;
       height: 28px;
       cursor: pointer;
       font-family: inherit;
@@ -330,6 +360,13 @@ function renderWebviewHtml(docData, fileName, filePath) {
 
     .tool-select:focus {
       border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+    }
+
+    .tool-select option {
+      background-color: var(--vscode-dropdown-background, #1e1e1e);
+      color: var(--vscode-dropdown-foreground, #f0f0f0);
+      font-size: 12px;
     }
 
     .color-picker-btn {
@@ -360,9 +397,9 @@ function renderWebviewHtml(docData, fileName, filePath) {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
-      color: inherit;
-      opacity: 0.7;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ruler-color);
     }
 
     .ruler-marks {
@@ -372,7 +409,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       padding: 0 40px;
     }
 
-    /* Find and Replace Bar */
+    /* Find & Replace Bar */
     .find-replace-bar {
       display: none;
       position: absolute;
@@ -393,17 +430,21 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .find-input {
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--glass-border);
-      color: inherit;
-      padding: 4px 8px;
+      color: var(--ui-text);
+      padding: 5px 8px;
       border-radius: 4px;
       font-size: 12px;
       width: 130px;
       outline: none;
     }
 
-    /* Main Scrollable Canvas Area */
+    .find-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* Canvas Scroll Container */
     .canvas-scroll-container {
       position: relative;
       z-index: 10;
@@ -420,7 +461,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       transition: transform 0.15s ease-out;
     }
 
-    /* The Authentic Word Paper Page (contenteditable) */
+    /* The Authentic High-Contrast Paper Sheet */
     .paper-page {
       width: 820px;
       min-height: 1160px;
@@ -436,6 +477,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       cursor: text;
       user-select: text;
       font-family: var(--font-stack);
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .paper-page:focus {
@@ -458,14 +500,21 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     .paper-page .word-table th, .paper-page .word-table td {
-      border: 1px solid #cbd5e1;
+      border: 1px solid var(--table-border);
       padding: 8px 12px;
       min-width: 40px;
     }
 
     .paper-page .word-table th {
-      background: #f1f5f9;
-      font-weight: 600;
+      background: var(--table-header-bg);
+      font-weight: 700;
+    }
+
+    .paper-page img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 8px 0;
     }
 
     /* Bottom Frosted Glass Status Bar */
@@ -474,7 +523,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       bottom: 0;
       left: 0;
       right: 0;
-      height: 26px;
+      height: 28px;
       background: var(--glass-panel);
       backdrop-filter: var(--glass-blur);
       -webkit-backdrop-filter: var(--glass-blur);
@@ -484,8 +533,9 @@ function renderWebviewHtml(docData, fileName, filePath) {
       justify-content: space-between;
       padding: 0 16px;
       font-size: 11px;
+      font-weight: 600;
+      color: var(--ui-text);
       z-index: 50;
-      opacity: 0.9;
     }
 
     .status-left, .status-right {
@@ -512,7 +562,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       cursor: pointer;
     }
 
-    /* Dialog Modals */
+    /* Modal Dialog */
     .glass-modal {
       display: none;
       position: fixed;
@@ -525,10 +575,11 @@ function renderWebviewHtml(docData, fileName, filePath) {
       border: 1px solid var(--glass-border);
       border-top: 1px solid var(--glass-specular);
       border-radius: var(--radius-md);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
       padding: 24px;
       z-index: 200;
-      min-width: 320px;
+      min-width: 340px;
+      color: var(--ui-text);
     }
 
     .modal-title {
@@ -582,10 +633,11 @@ function renderWebviewHtml(docData, fileName, filePath) {
 
     <!-- Ribbon Panel 1: 홈 (Home) -->
     <div id="panel-home" class="ribbon-panel active">
-      <!-- 실행 취소 / 다시 실행 -->
+      <!-- 실행 취소 / 다시 실행 / 서식 복사 -->
       <div class="toolbar-group">
         <button class="tool-btn" onclick="execCmd('undo')" title="실행 취소 (Cmd+Z)">↩</button>
         <button class="tool-btn" onclick="execCmd('redo')" title="다시 실행 (Cmd+Y)">↪</button>
+        <button class="tool-btn" id="btn-format-painter" onclick="toggleFormatPainter()" title="서식 복사 (Format Painter)">🎨 서식 복사</button>
       </div>
 
       <!-- 글꼴 선택 -->
@@ -624,7 +676,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <button class="tool-btn" onclick="changeFontSize(-1)" title="글꼴 크기 줄이기">A▼</button>
       </div>
 
-      <!-- 굵게, 기울임, 밑줄, 취소선, 색상 -->
+      <!-- 굵게, 기울임, 밑줄, 취소선, 첨자, 색상 -->
       <div class="toolbar-group">
         <button class="tool-btn" id="btn-bold" onclick="execCmd('bold')" title="굵게 (Cmd+B)"><b>B</b></button>
         <button class="tool-btn" id="btn-italic" onclick="execCmd('italic')" title="기울임꼴 (Cmd+I)"><i>I</i></button>
@@ -635,7 +687,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
 
         <!-- 텍스트 색상 -->
         <label class="tool-btn color-picker-btn" title="글자 색상">
-          <span style="border-bottom: 3px solid #2b7fff; font-weight: 700;">A</span>
+          <span style="border-bottom: 3px solid #2563eb; font-weight: 700;">A</span>
           <input type="color" class="color-input" value="#000000" onchange="execCmd('foreColor', this.value)" />
         </label>
 
@@ -648,7 +700,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <button class="tool-btn" onclick="execCmd('removeFormat')" title="서식 지우기">Tx</button>
       </div>
 
-      <!-- 단락: 목록, 들여쓰기, 정렬 -->
+      <!-- 단락: 목록, 들여쓰기, 정렬, 줄 간격 -->
       <div class="toolbar-group">
         <button class="tool-btn" onclick="execCmd('insertUnorderedList')" title="글머리 기호 목록">• ☰</button>
         <button class="tool-btn" onclick="execCmd('insertOrderedList')" title="번호 매기기 목록">1. ☰</button>
@@ -658,6 +710,16 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <button class="tool-btn" id="btn-align-center" onclick="execCmd('justifyCenter')" title="가운데 맞춤">☱</button>
         <button class="tool-btn" id="btn-align-right" onclick="execCmd('justifyRight')" title="오른쪽 맞춤">☲</button>
         <button class="tool-btn" id="btn-align-justify" onclick="execCmd('justifyFull')" title="양쪽 맞춤">☰</button>
+
+        <!-- 줄 간격 선택기 -->
+        <select class="tool-select" id="line-spacing-select" onchange="applyLineSpacing(this.value)" title="줄 간격">
+          <option value="1.0">1.0배</option>
+          <option value="1.15">1.15배</option>
+          <option value="1.5" selected>1.5배</option>
+          <option value="2.0">2.0배</option>
+          <option value="2.5">2.5배</option>
+          <option value="3.0">3.0배</option>
+        </select>
       </div>
 
       <!-- 스타일 선택 -->
@@ -687,10 +749,17 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <button class="tool-btn" onclick="deleteTableRow()" title="선택된 행 삭제">- 행 삭제</button>
         <button class="tool-btn" onclick="addTableColumn()" title="선택된 표에 열 추가">+ 열 추가</button>
         <button class="tool-btn" onclick="deleteTableColumn()" title="선택된 열 삭제">- 열 삭제</button>
+
+        <!-- 셀 배경색 -->
+        <label class="tool-btn color-picker-btn" title="셀 배경색 채우기">
+          <span>🎨 셀 색</span>
+          <input type="color" class="color-input" value="#f1f5f9" onchange="setCellBackground(this.value)" />
+        </label>
       </div>
 
-      <!-- 링크, 가로줄, 기호, 이미지 -->
+      <!-- 그림, 링크, 가로줄, 기호 -->
       <div class="toolbar-group">
+        <button class="btn-action" onclick="insertImagePrompt()" title="그림/이미지 삽입">🖼️ 그림 삽입</button>
         <button class="btn-action" onclick="insertLinkPrompt()" title="하이퍼링크 삽입">🔗 링크</button>
         <button class="tool-btn" onclick="execCmd('insertHorizontalRule')" title="구분선 삽입">― 가로선</button>
         <button class="tool-btn" onclick="insertSymbol('•')" title="글머리 기호 삽입">•</button>
@@ -704,14 +773,14 @@ function renderWebviewHtml(docData, fileName, filePath) {
     <!-- Ribbon Panel 3: 레이아웃 (Layout) -->
     <div id="panel-layout" class="ribbon-panel">
       <div class="toolbar-group">
-        <span style="font-size: 12px; opacity: 0.8;">여백:</span>
+        <span style="font-size: 12px; font-weight: 600;">여백:</span>
         <button class="tool-btn" onclick="setMargins('72px 84px')" title="표준 여백 (25.4mm)">표준</button>
         <button class="tool-btn" onclick="setMargins('40px 48px')" title="좁은 여백 (12.7mm)">좁게</button>
         <button class="tool-btn" onclick="setMargins('100px 120px')" title="넓은 여백 (38.1mm)">넓게</button>
       </div>
 
       <div class="toolbar-group">
-        <span style="font-size: 12px; opacity: 0.8;">방향:</span>
+        <span style="font-size: 12px; font-weight: 600;">방향:</span>
         <button class="tool-btn active" id="btn-orient-port" onclick="setOrientation('portrait')">세로</button>
         <button class="tool-btn" id="btn-orient-land" onclick="setOrientation('landscape')">가로</button>
       </div>
@@ -720,7 +789,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
     <!-- Ribbon Panel 4: 검토 (Review) -->
     <div id="panel-review" class="ribbon-panel">
       <div class="toolbar-group">
-        <button class="btn-action" onclick="showStatsModal()">📊 단어 및 글자 수 통계</button>
+        <button class="btn-action" onclick="showStatsModal()">📊 단어 및 글자 수 세기</button>
         <button class="btn-action" onclick="extractMarkdown()">📝 마크다운 추출</button>
       </div>
     </div>
@@ -733,6 +802,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
       </div>
       <div class="toolbar-group">
         <button class="tool-btn" onclick="toggleRuler()">눈금자 토글</button>
+        <button class="tool-btn" id="btn-dark-paper" onclick="toggleDarkPaperMode()" title="눈이 편안한 어두운 용지 모드 전환">🌙 어두운 용지 모드</button>
       </div>
       <div class="toolbar-group">
         <button class="tool-btn" onclick="setZoom(0.75)">75%</button>
@@ -779,7 +849,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
   <!-- Main Document Scroll Container -->
   <main class="canvas-scroll-container">
     <div class="paper-zoom-wrapper" id="paper-zoom-wrapper">
-      <!-- Real WYSIWYG Editable Word Canvas -->
+      <!-- High-Contrast Authentic Word Paper -->
       <article
         id="editor-canvas"
         class="paper-page"
@@ -814,7 +884,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
         <input type="range" class="zoom-slider" min="50" max="200" value="100" id="zoom-slider" oninput="setZoom(this.value / 100)" />
       </div>
       <div class="status-item">
-        <span style="font-weight: 600; color: #3b82f6;">WordCraft Engine</span>
+        <span style="font-weight: 700; color: #2563eb;">WordCraft Engine</span>
       </div>
     </div>
   </footer>
@@ -836,6 +906,7 @@ function renderWebviewHtml(docData, fileName, filePath) {
     let isDirty = false;
     let currentZoom = 1.0;
     let autoSaveTimer = null;
+    let formatPainterState = null;
 
     // Switch Top Ribbon Tab
     function switchRibbonTab(panelId) {
@@ -865,7 +936,6 @@ function renderWebviewHtml(docData, fileName, filePath) {
     }
 
     function applyFontSize(sizePt) {
-      // Wrap selection in font-size span
       const sel = window.getSelection();
       if (!sel.rangeCount) return;
       document.execCommand('fontSize', false, '3');
@@ -896,6 +966,71 @@ function renderWebviewHtml(docData, fileName, filePath) {
       markDirty();
     }
 
+    function applyLineSpacing(multiplier) {
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return;
+      let node = sel.anchorNode;
+      while (node && node !== canvas && !/^(P|H[1-6]|LI|DIV)$/i.test(node.nodeName)) {
+        node = node.parentNode;
+      }
+      if (node && node !== canvas) {
+        node.style.lineHeight = multiplier;
+        markDirty();
+      }
+    }
+
+    // Format Painter (서식 복사 도구)
+    function toggleFormatPainter() {
+      const btn = document.getElementById('btn-format-painter');
+      if (formatPainterState) {
+        formatPainterState = null;
+        btn.classList.remove('active');
+      } else {
+        const sel = window.getSelection();
+        if (sel && sel.anchorNode) {
+          const el = sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement;
+          if (el) {
+            const comp = window.getComputedStyle(el);
+            formatPainterState = {
+              fontFamily: comp.fontFamily,
+              fontSize: comp.fontSize,
+              color: comp.color,
+              fontWeight: comp.fontWeight,
+              fontStyle: comp.fontStyle,
+              textDecoration: comp.textDecorationLine
+            };
+            btn.classList.add('active');
+          }
+        }
+      }
+    }
+
+    // Apply Format Painter on text selection
+    canvas.addEventListener('mouseup', () => {
+      if (formatPainterState) {
+        const sel = window.getSelection();
+        if (sel && !sel.isCollapsed) {
+          const span = document.createElement('span');
+          span.style.fontFamily = formatPainterState.fontFamily;
+          span.style.fontSize = formatPainterState.fontSize;
+          span.style.color = formatPainterState.color;
+          span.style.fontWeight = formatPainterState.fontWeight;
+          span.style.fontStyle = formatPainterState.fontStyle;
+          span.style.textDecoration = formatPainterState.textDecoration;
+
+          const range = sel.getRangeAt(0);
+          const content = range.extractContents();
+          span.appendChild(content);
+          range.insertNode(span);
+
+          formatPainterState = null;
+          document.getElementById('btn-format-painter').classList.remove('active');
+          markDirty();
+        }
+      }
+    });
+
+    // Table Management
     function insertTable(rows, cols) {
       let tableHtml = '<table class="word-table"><tbody>';
       for (let r = 0; r < rows; r++) {
@@ -918,7 +1053,6 @@ function renderWebviewHtml(docData, fileName, filePath) {
         node = node.parentNode;
       }
       if (node && node.nodeName === 'TR') {
-        const table = node.closest('table');
         const colCount = node.children.length;
         const newRow = document.createElement('tr');
         for (let i = 0; i < colCount; i++) {
@@ -988,6 +1122,26 @@ function renderWebviewHtml(docData, fileName, filePath) {
       }
     }
 
+    function setCellBackground(color) {
+      const sel = window.getSelection();
+      let node = sel.anchorNode;
+      while (node && node !== canvas && node.nodeName !== 'TD' && node.nodeName !== 'TH') {
+        node = node.parentNode;
+      }
+      if (node) {
+        node.style.backgroundColor = color;
+        markDirty();
+      }
+    }
+
+    function insertImagePrompt() {
+      const url = prompt('삽입할 이미지 주소(URL) 또는 Data URL을 입력하세요:');
+      if (url) {
+        document.execCommand('insertImage', false, url);
+        markDirty();
+      }
+    }
+
     function insertLinkPrompt() {
       const url = prompt('삽입할 웹 주소(URL)를 입력하세요:', 'https://');
       if (url) {
@@ -1041,6 +1195,13 @@ function renderWebviewHtml(docData, fileName, filePath) {
         document.getElementById('btn-view-print').classList.add('active');
         document.getElementById('btn-view-web').classList.remove('active');
       }
+    }
+
+    function toggleDarkPaperMode() {
+      const isDark = document.body.classList.toggle('dark-paper-mode');
+      const btn = document.getElementById('btn-dark-paper');
+      btn.innerText = isDark ? '☀️ 밝은 용지 모드' : '🌙 어두운 용지 모드';
+      btn.classList.toggle('active', isDark);
     }
 
     function toggleRuler() {
@@ -1149,7 +1310,6 @@ function renderWebviewHtml(docData, fileName, filePath) {
       badge.className = 'save-indicator dirty';
       badge.innerText = '● 변경됨 (저장 필요)';
 
-      // Inform VS Code extension host of content change
       if (autoSaveTimer) clearTimeout(autoSaveTimer);
       autoSaveTimer = setTimeout(() => {
         vscode.postMessage({

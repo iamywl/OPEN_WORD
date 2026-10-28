@@ -2,7 +2,7 @@
   "name": "open-word",
   "displayName": "Open Word - Word Processor for Visual Studio Code",
   "description": "Full-featured Microsoft Word processor directly inside VS Code. Edit .docx with Frosted Glass ribbon, fonts, tables, styles, Korean IME, and live two-way save.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "iamywl",
   "engines": {
     "vscode": "^1.80.0"
