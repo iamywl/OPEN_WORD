@@ -1,74 +1,108 @@
-# Open Word / WordCraft for Visual Studio Code
+# Open Word — Visual Studio Code 워드 프로세서 확장 프로그램
 
 <p align="center">
-  <img src="icon.png" width="128" height="128" alt="Open Word Logo" />
+  <img src="icon.png" width="120" height="120" alt="Open Word Logo" />
 </p>
 
 <p align="center">
-  <strong>Clean-Room, High-Performance Native & Web Word Processor for Visual Studio Code</strong><br>
-  Instant <code>.docx</code>, <code>.doc</code>, <code>.rtf</code> preview with frosted glass UI, PDF export, Markdown extraction, and one-click launch into native macOS Metal & Windows DirectX desktop app.
+  <b>Visual Studio Code 안에서 완전하게 동작하는 오픈소스 워드 프로세서</b><br>
+  별도의 Microsoft Word 설치 없이 VS Code 탭에서 <code>.docx</code> 문서를 직접 작성, 편집, 서식 지정 및 실시간 저장(<code>Cmd+S</code>)합니다.
 </p>
 
 ---
 
-## ✨ Features
+## 📸 캡처로 보는 주요 기능 (Visual Feature Tour)
 
-- 📑 **Instant `.docx` Preview in VS Code**: Click any `.docx`, `.doc`, `.rtf`, or `.odt` file in the Explorer to preview it directly inside VS Code without needing Microsoft Word installed.
-- 🪟 **Glass Design System (Frosted Glass / Glassmorphism)**: Elegant translucent ribbon, specular highlight borders, ambient drop shadows, and high-contrast typography adhering to WCAG 4.5:1 standards.
-- 🇰🇷 **100% Hangul & Unicode Typography**: Perfect glyph shaping and rendering for Korean (Malgun Gothic, Apple SD Gothic Neo, NanumGothic) and East Asian CJK typography.
-- 🚀 **1-Click Native Desktop App Bridge**: Seamlessly launch the 100% Rust-native desktop app powered by macOS Metal / Windows DirectX hardware acceleration with 120fps smooth scrolling.
-- 📄 **Export to PDF**: Convert documents to clean vector PDFs with embedded font subsets.
-- 📝 **Markdown & Text Extraction**: Extract document text into clean Markdown files with headings, tables, and bullet points preserved.
-- 🧩 **OOXML Structure Inspection**: Inspect raw `word/document.xml` structure directly inside VS Code with syntax highlighting.
+### 1. VS Code 에디터 내 풀 워드 프로세서 캔버스 (Full Word Canvas in VS Code)
+> VS Code 내부에서 Microsoft Word와 동일한 **프로스티드 글래스 리본(홈/삽입/레이아웃/검토/보기)**, **상단 수평 눈금자(Ruler)**, **A4 규격 실제 용지 캔버스**, **하단 실시간 상태바**가 완벽하게 구동됩니다.
 
----
-
-## 🚀 Getting Started
-
-### 1. View Documents
-Simply click on any `.docx` file in your VS Code Explorer. Open Word will open as the default custom editor with a clean, frosted glass document canvas.
-
-### 2. Launch Native Hardware-Accelerated App
-Click the **"🚀 Open Native Desktop"** button on the glass ribbon or right-click any `.docx` file and choose **"Open Word: Open in Native Desktop App"**.
-If the native binary is built in your workspace (`target/release/wordcraft`), it launches instantly with native GPU acceleration.
-
-To build the native desktop app locally:
-```bash
-cargo build --release -p wordcraft
+```
++-----------------------------------------------------------------------------------------------+
+|  W  WON_셀러링크_제안서_v7.docx   [✓ 저장됨]    [홈] [삽입] [레이아웃] [검토] [보기]   [💾 저장] [📄 PDF]   |
++-----------------------------------------------------------------------------------------------+
+|  [↩ ↪] [Apple SD Gothic ▼] [11 ▼] [A▲ A▼] [B I U S x₂ x² A🎨 ab🖍️ Tx] [• 1. ⇤ ⇥ ≡ ☱ ☲ ☰] [🔍 찾기] |
++-----------------------------------------------------------------------------------------------+
+|  | 0 ······ | 2 ······ | 4 ······ | 6 ······ | 8 ······ | 10 ······ | 12 ······ | 14 ······ | 16 cm   |
++-----------------------------------------------------------------------------------------------+
+|                                                                                               |
+|         +---------------------------------------------------------------------------+         |
+|         |                                                                           |         |
+|         |   WOORI x SSAFY 우리WON뱅킹 아이디어 경진대회  |  공식 제안서               |         |
+|         |   =============================================================           |         |
+|         |                                                                           |         |
+|         |   1. 제안 배경 및 핵심 문제 정의                                          |         |
+|         |   가나다라마바사 동해 물과 백두산이 마르고 닳도록 하느님이 보우하사...    |         |
+|         |                                                                           |         |
+|         |   +--------------------+--------------------------------------+           |         |
+|         |   | 구분               | 내용                                 |           |         |
+|         |   +--------------------+--------------------------------------+           |         |
+|         |   | 1초 사입비 에스크로| 인플루언서 2030 영세 셀러 대상 금융  |           |         |
+|         |   +--------------------+--------------------------------------+           |         |
+|         |                                                                           |         |
+|         +---------------------------------------------------------------------------+         |
+|                                                                                               |
++-----------------------------------------------------------------------------------------------+
+|  1 / 1 페이지  •  2,851 단어  •  12,215 자 (공백 제외 9,410 자)  •  한국어          [ 100% ────●── ]   |
++-----------------------------------------------------------------------------------------------+
 ```
 
-### 3. Export to PDF
-Click **"📄 Export PDF"** on the ribbon or run the command:
-`Open Word: Convert to PDF`
+---
+
+### 2. 프로스티드 글래스 디자인 (Glassmorphism & Specular Border)
+- **투명도와 블러 (Frosted Blur)**: 문서 캔버스의 가독성을 극대화하기 위해 상단 리본과 툴바는 미려한 반투명 아크릴(`backdrop-filter: blur(24px) saturate(190%)`) 효과를 적용했습니다.
+- **1px 스펙큘러 하이라이트 (Specular Border)**: 빛을 머금은 미세 상단 경계선과 앰비언트 디퓨전 그림자로 입체적인 오피스 데스크 환경을 구현합니다.
+- **고대비 접근성 (WCAG 4.5:1)**: 라이트 모드 및 다크 모드 모두에서 텍스트와 아이콘이 또렷하게 보이도록 명도 대비를 철저히 보장합니다.
 
 ---
 
-## ⌨️ Commands
-
-| Command | Title | Description |
-|---|---|---|
-| `open-word.openNative` | `Open Word: Open in Native Desktop App` | Launches macOS Metal / Windows DirectX app |
-| `open-word.convertToPdf` | `Open Word: Convert to PDF` | Exports current document as PDF |
-| `open-word.extractText` | `Open Word: Extract Document Text / Markdown` | Extracts Markdown into a new editor tab |
-| `open-word.inspectDocx` | `Open Word: Inspect OOXML Structure` | Opens raw `word/document.xml` |
-| `open-word.openSample` | `Open Word: Launch Desktop App with Sample Document` | Opens native app with demo template |
+### 3. 한글 조합형 IME 및 다국어 폰트 완벽 지원 (Korean Typography)
+- **초성/중성/종성 완벽 결합**: 한글 자모 및 받침 입력(`닭`, `흙`, `똠방각하`, `제안서`) 시 글자가 씹히거나 커서가 튀는 현상 없이 부드러운 실시간 타이핑이 가능합니다.
+- **네이티브 CJK 메트릭 치환**: `Apple SD Gothic Neo(애플 산돌고딕)`, `Malgun Gothic(맑은 고딕)`, `NanumGothic(나눔고딕)` 등 한국어 표준 시스템 폰트를 기본 내장하여 글리프 깨짐(Tofu Box) 현상이 전혀 없습니다.
 
 ---
 
-## ⚙️ Configuration Settings
-
-- `open-word.nativeBinaryPath`: Custom path to `wordcraft` or `wordcraft.exe` executable.
-- `open-word.cliBinaryPath`: Custom path to `wordcraft-cli` or `wordcraft-cli.exe` executable.
-
----
-
-## 🔒 Privacy & Open Source Clean-Room
-
-- **100% Offline & Private**: Your documents are processed entirely locally on your machine. No telemetry, no external cloud API calls.
-- **Pure Clean-Room**: Open Word contains no proprietary Microsoft assets or code. All format parsers and renderers are clean-room open-source implementations.
+### 4. 실제 `.docx` 실시간 양방향 저장 (Live Two-Way Sync)
+- **`Cmd+S` (macOS) / `Ctrl+S` (Windows)**: 키보드 단축키나 상단 **"💾 저장"** 버튼을 누르면 문서 내용이 표준 OOXML(`word/document.xml`)로 즉시 재변환되어 디스크의 실제 `.docx` 파일에 바로 저장됩니다.
+- **변경 감지 (Dirty State)**: 문서 타이핑 시 VS Code 상단 탭에 저장되지 않은 변경사항(`•`)이 표시되고, 상단 배지가 `● 변경됨`으로 실시간 갱신됩니다.
 
 ---
 
-## 📄 License
+## 🛠️ 기능 상세 일람 (Feature Breakdown)
 
-MIT OR Apache-2.0
+| 탭 / 영역 | 주요 제공 기능 |
+|---|---|
+| **홈 (Home)** | 실행 취소/다시 실행(`Cmd+Z`/`Cmd+Y`), 폰트 패밀리 선택, 글꼴 크기(8~72pt), 크기 키우기/줄이기, **굵게**, *기울임*, <u>밑줄</u>, ~~취소선~~, 첨자(`x₂`/`x²`), 글자/형광펜 색상 팔레트, 서식 지우기, 글머리 기호(`•`), 번호 매기기(`1.2.3.`), 들여쓰기/내어쓰기, 4단 정렬, 스타일 갤러리(제목1, 2, 3, 본문, 인용문, 코드), 찾기 및 바꾸기 |
+| **삽입 (Insert)** | 표(Table) 삽입, 행 추가/삭제, 열 추가/삭제, 하이퍼링크(`Cmd+K`), 가로 구분선, 특수문자(`•`, `※`, `★`, `✓`), 오늘 날짜/시간 스탬프 |
+| **레이아웃 (Layout)** | 여백 설정(표준 25.4mm, 좁게 12.7mm, 넓게 38.1mm), 용지 방향(세로 Portrait / 가로 Landscape) |
+| **검토 (Review)** | 상세 문서 통계 모달(단어 수, 공백 포함 글자 수, 공백 제외 글자 수, 단락 수), 마크다운 추출 |
+| **보기 (View)** | 인쇄 모양(A4 실제 용지) vs 웹 모양(전체 화면), 상단 눈금자(Ruler) 토글, 배율 조절(50% ~ 200%) |
+| **빠른 실행** | 💾 즉시 저장(`Cmd+S`), 📄 PDF 변환 내보내기, 🚀 하드웨어 가속 데스크톱 앱(Metal/DirectX) 실행 |
+
+---
+
+## 🚀 사용 방법 (How to Use)
+
+### 1. 설치 및 문서 열기
+1. 패키지 설치:
+   ```bash
+   code --install-extension open-word-0.2.0.vsix
+   ```
+2. VS Code 탐색기에서 원하는 워드 문서(`.docx`, `.doc`, `.rtf`, `.odt`)를 클릭하면 워드 프로세서 캔버스가 즉시 열립니다.
+
+### 2. 단축키 안내
+- `Cmd + S` / `Ctrl + S`: 문서 즉시 저장
+- `Cmd + B` / `Ctrl + B`: 굵게 (Bold)
+- `Cmd + I` / `Ctrl + I`: 기울임꼴 (Italic)
+- `Cmd + U` / `Ctrl + U`: 밑줄 (Underline)
+- `Cmd + Z` / `Ctrl + Z`: 실행 취소 (Undo)
+- `Cmd + Y` / `Ctrl + Y`: 다시 실행 (Redo)
+- `Ctrl + F` / `Cmd + F`: 찾기 및 바꾸기 (Find & Replace)
+- `Tab` / `Shift + Tab`: 들여쓰기 / 내어쓰기
+
+---
+
+## 🔒 개인정보 및 오픈소스 라이선스
+
+- **100% 로컬 오프라인 처리**: 외부 클라우드나 외부 서버로 문서를 전송하지 않으며, 모든 파일 파싱과 렌더링은 사용자 컴퓨터 내부에서만 처리됩니다.
+- **클린룸 오픈소스**: Microsoft의 독점 소스코드나 저작권 자산 없이 순수 공개 표준(OOXML ECMA-376) 기반으로 제작되었습니다.
+- **라이선스**: MIT OR Apache-2.0
