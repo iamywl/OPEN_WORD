@@ -75,7 +75,7 @@
 
 WordCraft는 Microsoft Word(Microsoft 365 Mac 16.113.4 & ECMA-376 표준)의 리버스 엔지니어링 카탈로그 분석을 통해 **520개 핵심 기능 중 505개 기능 명령(97.1% 패리티)**을 구축하고, 모든 기능을 **5대 핵심 플랫폼에 1:1로 완전하게 대응**시켰습니다.
 
-상세 기술 분석서: [docs/feature-specification-parity-matrix.md](docs/feature-specification-parity-matrix.md)
+상세 기술 분석서: [docs/feature-specification-parity-matrix.md](docs/feature-specification-parity-matrix.md) · **종합 지표 추적 대시보드:** [docs/word-parity-tracking-dashboard.md](docs/word-parity-tracking-dashboard.md)
 
 ```
 +----------------------------------------------------------------------------------------------------+
