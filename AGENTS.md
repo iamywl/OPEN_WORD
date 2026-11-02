@@ -5,6 +5,16 @@ WordCraft is a clean-room, open-source, Rust-native word processor targeting Mic
 ## Start every session here
 1. Read `plan/STATUS.md` (current milestone, next task), then the task in `plan/execution-plan.md` and the relevant `plan/architecture.md` section. `plan/` is gitignored (local only); if it's missing, start from `ROADMAP.md`, `docs/gaps.md` and `docs/roadmap.md` (Current focus).
 2. Follow the autonomous operation protocol (`plan/execution-plan.md` §5). Don't stop to ask unless a decision is genuinely the owner's (licensing, publishing, pushing to new remotes, secrets).
+3. Read the relevant specialized agent guide in `.agents/` according to your task role.
+
+## Specialized Agent Instruction Files (`.agents/`)
+모든 기획, 개발, QA, UI/UX 작업은 세부 역할별 전문 에이전트 지침에 따라 수행됩니다:
+1. [자율 반복 개발·검증·개선 총괄 에이전트](.agents/1.orchestrator-loop.md): 기획 ➔ 개발 ➔ 테스트 ➔ 실기 캡처 ➔ 피드백 자율 루프 및 셀프 힐링
+2. [기획 및 워드 패리티 리드](.agents/2.planner-word-parity.md): MS Word 블랙박스 분석, ECMA-376 표준 서식 및 패리티 명세
+3. [코어 엔진 및 플랫폼 개발자](.agents/3.core-developer.md): Rust Never-Crash 원칙, 업데이트 모달 차단, 한글 카탈로그 자동 임베딩
+4. [실기 검증 및 QA 증명 스페셜리스트](.agents/4.native-qa-verifier.md): macOS `/Applications` 런치패드 배포, 실화면 윈도우 캡처 QA, 증명 아티팩트
+5. [글래스모피즘 디자인 & 로컬라이제이션](.agents/5.ui-ux-localization.md): Frosted Glass 아크릴 비주얼, 완전한 한국어 리본, 한글 조합형 IME 안정성
+
 
 ## Never crash
 People trust WordCraft with their writing; a crash loses their work. **This outranks feature work**: never ship a feature through a panic path, and fix a crash before building on top of it. Standard: [`craftrules/standards/never-crash.md`](https://github.com/storytold/craftrules/blob/main/standards/never-crash.md).
@@ -66,8 +76,37 @@ WordCraft는 웹뷰나 일렉트론 래퍼가 아닌 **100% 순수 Rust 네이�
 1. **분석 및 설계:** 요구사항 정의 및 명세 수립.
 2. **코드 구현:** Rust 클린룸 및 'Never Crash' 원칙에 따른 구현.
 3. **컴파일 및 단위 테스트:** `cargo test` 및 WCAG 명도 대비 검증 통과.
-4. **헤드리스 스크린샷 QA 캡처:** `cargo run -p wordcraft-ui-egui --example ui_shot -- script.jsonl`를 통해 화면 포커스 간섭 없이 실제 렌더링 결과물(PNG)을 캡처하여 시각적 검증 수행.
+4. **실기 및 윈도우 스크린샷 QA 캡처:**
+   - 1차 헤드리스 검증: `cargo run -p wordcraft-ui-egui --example ui_shot -- script.jsonl`
+   - 2차 실환경 macOS 네이티브 검증: 실제 `/Applications/WordCraft.app` 구동 후 control 프로토콜(`ui.screenshot`) 또는 macOS 윈도우 캡처로 팝업 간섭 및 실제 렌더링 무결성을 증명.
 5. **피드백 및 반복 루프:** 결함 발견 시 1번으로 돌아가 100% 달성할 때까지 루프 지속.
+
+## Never Show Intrusive Update Dialogs (개발/로컬 빌드 업데이트 모달 팝업 방지)
+- **원칙:** 업스트림 저장소 버전과 로컬 워크스페이스 간 버전 불일치로 인해 시작 시 "WordCraft UPDATE v0.11.0 to 0.14.0"과 같은 모달 팝업이 뜨는 현상을 엄격히 금지합니다.
+- `apps/wordcraft/src/main.rs`의 `app.set_startup_update_check(false)`를 항상 유지하며, `crates/ui-egui/src/updates_ui.rs`에서 `startup_check`가 켜져 있지 않은 한 자동 팝업 모달이 노출되지 않도록 가드합니다.
+- 업데이트는 오직 사용자가 메뉴(도움말 ▸ 업데이트 확인 / Help ▸ Check for Updates)를 수동으로 클릭했을 때만 확인 창을 엽니다.
+
+## True Korean Localization & Hangul IME Parity (한국어 로컬라이제이션 및 한글 입력 무결성)
+- **언어 카탈로그 자동 임베딩:** `crates/ui-egui/build.rs`는 `CRAFT_I18N_DIR` 환경 변수가 없더라도 `vendor/craft-i18n` 및 로컬 체크아웃 디렉터리를 자동 탐색하여 27개 언어(특히 한국어 `locales/ko/common.tsv`, `locales/ko/wordcraft.tsv`) 번역 카탈로그를 바이너리에 100% 포함합니다.
+- **시스템 언어 자동 감지:** macOS (`defaults read -g AppleLanguages` -> `ko-KR`) 및 Windows의 한국어 환경에서는 리본 메뉴(`파일`, `홈`, `삽입`, `디자인`, `레이아웃`, `참조`, `편지`, `검토`, `보기`, `개발 도구`, `Zotero`, `도움말`)와 옵션, 상태 표시줄이 기본 한국어로 즉시 렌더링되어야 합니다.
+- **한글 폰트 폴백:** macOS의 `Apple SD Gothic Neo`, Windows의 `맑은 고딕(Malgun Gothic)`, 리눅스의 `Noto Sans CJK KR`이 누락 없이 렌더링 엔진에 바인딩되어 두부(tofu)나 글리프 누락이 일절 없어야 합니다.
+- **한글 IME 조합형 입력:** `crates/engine/src/tests/typing.rs`에 따라 한글 조합 중 음절(composing string)과 완료된 문자(committed text)의 분리, 중복 입력, 자모 쪼개짐, 캐럿 위치 불일치 현상이 발생하지 않도록 철저히 테스트하고 유지합니다.
+
+## macOS Native Bundle & Launchpad Sync Protocol (macOS 네이티브 앱 및 런치패드 등록 의무)
+- **원칙:** macOS 사용자는 터미널 명령어뿐만 아니라 Finder 및 런치패드(Launchpad)에서 직접 앱을 실행합니다.
+- 네이티브 macOS 배포 및 검증 시 바이너리를 항상 `/Applications/WordCraft.app/Contents/MacOS/WordCraft`에 동기화합니다.
+- **Ad-hoc 코드 서명:** `codesign --force --deep --sign - /Applications/WordCraft.app`을 실행하여 macOS Gatekeeper 및 프로세스 무결성을 보장합니다.
+- **Launch Services 등록:** `/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f /Applications/WordCraft.app`를 실행하여 런치패드와 Spotlight 검색에 즉시 노출되도록 등록합니다.
+
+## Image Layering: Behind-Text Signatures & Watermarks (글 뒤로 배치 및 서명/직인 레이어링)
+- **비즈니스 문서 호환성:** 계약서 및 공문서의 직인, 서명 이미지, 워터마크는 텍스트 뒤에 배치(`WrapType::BehindText`)되어야 합니다.
+- **Z-Order 렌더링:** `BehindText` 래핑 이미지는 본문 텍스트보다 먼저(뒤쪽에) 렌더링되어야 하며, 텍스트가 서명 이미지 위에 선명하게 가독성을 유지해야 합니다.
+- **히트테스팅 우선순위:** 글 뒤에 배치된 이미지는 텍스트 선택 클릭을 가로채지 않아야 하며, 텍스트가 우선적으로 선택되고 편집될 수 있어야 합니다.
+- **투명 알파 합성:** 서명 PNG의 투명 배경이 흰색 사각형으로 가려지지 않고 깔끔한 알파 블렌딩으로 합성되어야 합니다.
+
+## Documentation & Audit Artifact Protocol (모든 감사 및 검증 결과 실증 문서화)
+- **문서화 원칙:** 모든 버그 수정, 기능 감사, 레이아웃/입력 검증 결과는 반드시 Markdown 보고서와 실증 이미지 아티팩트로 남깁니다.
+- 추상적인 주장이나 가정은 금지되며, 반드시 캡처된 스크린샷과 로그, 재현 테스트 코드로 증명합니다.
 
 ## Typing behaves like Word
 Typing, Enter, Backspace, Tab, lists, AutoCorrect and AutoFormat follow Word's observed behaviour in [`docs/typing-parity.md`](docs/typing-parity.md), pinned by `crates/engine/src/tests/typing.rs` (keys go through the same commands as the keyboard). Change behaviour, doc and tests together; a typing fix lands with a test there. Compare headlessly (`ui_shot`); don't drive GUIs with keystrokes on the shared machine.

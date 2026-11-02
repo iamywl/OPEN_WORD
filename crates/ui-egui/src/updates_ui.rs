@@ -80,11 +80,13 @@ pub(crate) fn show(app: &mut WordApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
         // The restart helper is scheduled before the app closes, so no update starts over unsaved work.
-        let clean = !(app.session.dirty || app.save_unconfirmed() || app.printing.busy() || crate::panes::has_comment_drafts(app));
-        match app.updates_rt.updater.show_if(ctx, clean) {
-            Action::OpenUrl(url) => ctx.open_url(egui::OpenUrl::new_tab(url)),
-            Action::Close => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
-            Action::None => {}
+        if app.updates_rt.startup_check {
+            let clean = !(app.session.dirty || app.save_unconfirmed() || app.printing.busy() || crate::panes::has_comment_drafts(app));
+            match app.updates_rt.updater.show_if(ctx, clean) {
+                Action::OpenUrl(url) => ctx.open_url(egui::OpenUrl::new_tab(url)),
+                Action::Close => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
+                Action::None => {}
+            }
         }
         // The window answers Help ▸ Check for Updates, so it follows the updater's status.
         let rt = &mut app.updates_rt;
