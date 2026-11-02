@@ -788,7 +788,7 @@ fn visuals(t: &Tokens) -> Visuals {
     v.window_fill = t.menu;
     v.extreme_bg_color = t.input;
     v.faint_bg_color = t.panel;
-    v.window_stroke = Stroke::new(1.0, t.border_strong);
+    v.window_stroke = Stroke::new(1.0, if t.dark { Color32::from_rgb(0x60, 0x62, 0x6A) } else { t.border_strong });
     v.window_corner_radius = CornerRadius::same(10);
     v.menu_corner_radius = CornerRadius::same(8);
     v.selection.bg_fill = t.selection;
@@ -814,7 +814,7 @@ fn visuals(t: &Tokens) -> Visuals {
     v.widgets.open.weak_bg_fill = t.pressed;
     // Glassmorphic ambient shadows: wider diffusion radius for floating frosted glass panels
     v.popup_shadow = egui::Shadow { offset: [0, 6], blur: 24, spread: 1, color: Color32::from_black_alpha(if t.dark { 110 } else { 35 }) };
-    v.window_shadow = egui::Shadow { offset: [0, 10], blur: 32, spread: 2, color: Color32::from_black_alpha(if t.dark { 130 } else { 45 }) };
+    v.window_shadow = egui::Shadow { offset: [0, 10], blur: 32, spread: 2, color: Color32::from_black_alpha(if t.dark { 160 } else { 45 }) };
     v
 }
 

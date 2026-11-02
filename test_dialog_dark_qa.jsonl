@@ -1,0 +1,9 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "ui.theme", "params": {"value": "dark"}}}
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "font"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_dark_font_dialog.png"}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "paragraph"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_dark_paragraph_dialog.png"}

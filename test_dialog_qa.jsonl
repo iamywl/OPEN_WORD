@@ -1,0 +1,13 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "font"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_font_dialog.png"}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "paragraph"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_paragraph_dialog.png"}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "pageSetup"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_page_setup_dialog.png"}
+{"method": "engine.execute", "params": {"command": "ui.dialog", "params": {"name": "wordCount"}}}
+{"steps": 10}
+{"shot": "/Users/ywlee/.gemini/antigravity/brain/9113c268-f3bb-48b4-8bf7-79488d6021ab/qa_proof_modal_word_count_dialog.png"}
