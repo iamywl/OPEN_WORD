@@ -4,7 +4,7 @@
 > **문서 버전:** 1.0.0 · **최종 감사일:** 2026-11-02  
 > **검증 대상:** macOS Apple Silicon, Windows 11, VS Code 확장, Linux, WASM 웹  
 > **검증 방법론:** 100% 무인 헤드리스 오프스크린 렌더링 캡처 (`ui_shot`), 엔진 명령 검증, 코드 레벨 결함 분석  
-> **증빙 캡처 사양:** 2880 × 1800 HiDPI Retina 실제 렌더링 PNG (총 13종)
+> **증빙 캡처 사양:** 총 17종 (헤드리스 오프스크린 렌더링 13종 + 실제 macOS AppKit 실행 윈도우 실캡처 4종)
 
 ---
 
@@ -35,6 +35,10 @@ WordCraft 프로젝트는 Microsoft Word와의 완전한 패리티를 목표로 
 | **11** | [`qa_proof_korean_filename.png`](../qa_proof_korean_filename.png) | 2880×1800 | macOS 타이틀바 유니코드 한글 파일명(`한글_보고서_V1.docx`) 렌더링 | 🟢 **PASS (개선 완료)** |
 | **12** | [`qa_proof_glass_dark.png`](../qa_proof_glass_dark.png) | 2880×1800 | 글래스모피즘 1px 스페큘러 보더 및 앰비언트 섀도우 렌더링 | 🟢 **PASS (개선 완료)** |
 | **13** | [`qa_proof_glass_sample.png`](../qa_proof_glass_sample.png) | 2880×1800 | 라이트 모드 글래스 리본 반투명 블러 및 캔버스 가독성 | 🟢 **PASS (개선 완료)** |
+| **14** | [`qa_real_macos_native_window_capture.png`](../qa_real_macos_native_window_capture.png) | 2880×1840 | **[실제 macOS 윈도우]** AppKit 데스크톱 창, 시스템 업데이트 모달, 창 여백 | 🟢 **실행 윈도우 실캡처** |
+| **15** | [`qa_real_macos_native_window_capture_clean.png`](../qa_real_macos_native_window_capture_clean.png) | 2880×1840 | **[실제 macOS 윈도우]** MacTitleBar(70pt 신호등 여백), 계약서 다크 테마 | 🟢 **실행 윈도우 실캡처** |
+| **16** | [`qa_real_macos_native_window_stamp_behind.png`](../qa_real_macos_native_window_stamp_behind.png) | 2880×1840 | **[실제 macOS 윈도우]** 계약서 텍스트 뒤 직인 배치, Picture Format 리본 | 🟢 **실행 윈도우 실캡처** |
+| **17** | [`qa_real_macos_click_hit_text_not_stamp.png`](../qa_real_macos_click_hit_text_not_stamp.png) | 2880×1840 | **[실제 macOS 윈도우]** 글 뒤 도장 클릭 시 텍스트 캐럿만 잡히는 버그 실증 | 🔴 **라이브 결손 실증** |
 
 ---
 
