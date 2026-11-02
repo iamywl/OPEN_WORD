@@ -4,7 +4,8 @@
 > **기준 대상:** Microsoft Word (Microsoft 365) Mac 16.113.4 & Windows / ECMA-376 (OOXML) 표준  
 > **최종 지표 측정일:** 2026-11-01 · **상태:** Alpha (Beta 진입 전 7대 블로커 집중 추적 중)  
 > **검증 도구:** `python3 scripts/parity_metrics.py` 및 `cargo run -p xtask -- parity`  
-> **단일 진실 원천(SSOT):** `crates/engine/src/catalog.rs` (520개 기능 카탈로그) & `crates/ui-egui` (UI 구현부)
+> **단일 진실 원천(SSOT):** `crates/engine/src/catalog.rs` (520개 기능 카탈로그) & `crates/ui-egui` (UI 구현부)  
+> **종합 실증 감사 보고서:** [`docs/qa-audit-and-verification-report.md`](qa-audit-and-verification-report.md) · **서명/직인 결손 보고서:** [`docs/signature-and-image-layering-gaps.md`](signature-and-image-layering-gaps.md)
 
 ---
 

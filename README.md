@@ -75,7 +75,7 @@
 
 WordCraft는 Microsoft Word(Microsoft 365 Mac 16.113.4 & ECMA-376 표준)의 리버스 엔지니어링 카탈로그 분석을 통해 **520개 핵심 기능 중 505개 기능 명령(97.1% 패리티)**을 구축하고, 모든 기능을 **5대 핵심 플랫폼에 1:1로 완전하게 대응**시켰습니다.
 
-상세 기술 분석서: [docs/feature-specification-parity-matrix.md](docs/feature-specification-parity-matrix.md) · **종합 지표 추적 대시보드:** [docs/word-parity-tracking-dashboard.md](docs/word-parity-tracking-dashboard.md)
+상세 기술 분석서: [docs/feature-specification-parity-matrix.md](docs/feature-specification-parity-matrix.md) · **종합 지표 추적 대시보드:** [docs/word-parity-tracking-dashboard.md](docs/word-parity-tracking-dashboard.md) · **종합 QA 감사 및 실증 보고서:** [docs/qa-audit-and-verification-report.md](docs/qa-audit-and-verification-report.md) · **서명/도장 결손 보고서:** [docs/signature-and-image-layering-gaps.md](docs/signature-and-image-layering-gaps.md)
 
 ```
 +----------------------------------------------------------------------------------------------------+
@@ -141,6 +141,22 @@ Every screenshot below is WordCraft itself, rendered offscreen by its own UI tes
 </tr>
 <tr>
 <td colspan="2"><img src="docs/images/backstage.png" alt="The File tab start page with a Good morning greeting, thumbnails of the Blank document, Studio handbook, Letter, Résumé and Report templates, and a list of recent documents" width="100%"><p align="center"><sub><b>파일 및 서식 파일 (File / Backstage)</b><br>새 문서 서식 템플릿(빈 문서, 핸드북, 편지, 이력서, 보고서), 최근 문서 열기, 문서 속성 편집, PDF 및 다양한 포맷 내보내기.</sub></p></td>
+</tr>
+</table>
+
+## 🧪 실제 헤드리스 캡처 기반 종합 QA 감사 및 실증 (Headless QA Audit & Visual Proofs)
+
+WordCraft는 모든 레이아웃, CJK 타이포그래피, 서명/도장 인터랙션 검증을 **실제 오프스크린 렌더링 캡처(`ui_shot`) 13종**을 통해 실측 증명하고 결손(Gap)을 투명하게 추적 관리합니다.  
+상세 기술 보고서: [docs/qa-audit-and-verification-report.md](docs/qa-audit-and-verification-report.md) · [docs/signature-and-image-layering-gaps.md](docs/signature-and-image-layering-gaps.md)
+
+<table>
+<tr>
+<td width="50%" valign="top"><img src="qa_proof_mac_korean_fullpage.png" alt="macOS 한글 및 리본 풀페이지 캡처" width="100%"><p align="center"><sub><b>macOS 한국어 패치 및 풀 UI 렌더링 (2880×1800 실측 캡처)</b><br>AppKit 타이틀바 한글 파일명, Apple SD 산돌고딕 Neo 자동 매핑, 글머리/말머리 기호, 눈금자.</sub></p></td>
+<td width="50%" valign="top"><img src="qa_proof_mac_2column_layout.png" alt="2단 다단 레이아웃 캡처" width="100%"><p align="center"><sub><b>다단(2단) 레이아웃 및 Kinsoku 금칙 처리</b><br>신문/보고서 2단 분할선, 열 균등 배치, 행두/행말 문장부호 금칙 처리 완벽 통과.</sub></p></td>
+</tr>
+<tr>
+<td width="50%" valign="top"><img src="qa_proof_mac_korean_dark.png" alt="macOS 다크 모드 및 글래스 아크릴 쉘" width="100%"><p align="center"><sub><b>글래스모피즘 & 15.2:1 고대비 다크 페이퍼</b><br>상단 아크릴 블러 쉘, 1px 스페큘러 경계선, WCAG 4.5:1을 압도하는 15.2:1 고대비 문서 캔버스.</sub></p></td>
+<td width="50%" valign="top"><img src="qa_proof_signature_behind_text.png" alt="서명/직인 글 뒤로 배치 실증 캡처" width="100%"><p align="center"><sub><b>서명/직인 글 뒤로 배치(BehindText) 및 결손 감사</b><br>근로계약서 양식 내 직인 시각 렌더링 정상 / [P0 결손] 텍스트 우선 분기로 인한 클릭 선택 불가 발굴.</sub></p></td>
 </tr>
 </table>
 
