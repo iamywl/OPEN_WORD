@@ -585,12 +585,10 @@ pub fn font_definitions_language(prefer_hans: bool, prefer_korean: bool, system_
             data.index = f.index;
             add_cjk(&mut fonts, format!("system {}", f.family), data);
         }
-        if !prefer_korean {
-            if let Some(f) = system_cjk_font(false, true) {
-                let mut data = FontData::from_static(&f.bytes);
-                data.index = f.index;
-                add_cjk(&mut fonts, format!("system-ko {}", f.family), data);
-            }
+        if !prefer_korean && let Some(f) = system_cjk_font(false, true) {
+            let mut data = FontData::from_static(&f.bytes);
+            data.index = f.index;
+            add_cjk(&mut fonts, format!("system-ko {}", f.family), data);
         }
     }
     #[cfg(target_arch = "wasm32")]

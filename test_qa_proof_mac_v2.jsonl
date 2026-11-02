@@ -1,0 +1,15 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "file.open", "params": {"path": "/Users/ywlee/sideproejct/word_extention/test_documents/korean_mac_qa_test.docx"}}}
+{"method": "engine.execute", "params": {"command": "view.zoom", "params": {"percent": 100}}}
+{"steps": 25}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_mac_korean_fullpage.png"}
+{"method": "engine.execute", "params": {"command": "ui.tab", "params": {"tab": "Layout"}}}
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "layout.columns", "params": {"count": 2, "separator": true, "space": 24.0}}}
+{"steps": 25}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_mac_2column_layout.png"}
+{"method": "engine.execute", "params": {"command": "ui.theme", "params": {"value": "dark"}}}
+{"method": "engine.execute", "params": {"command": "view.darkMode", "params": {}}}
+{"method": "engine.execute", "params": {"command": "ui.tab", "params": {"tab": "Home"}}}
+{"steps": 25}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_mac_korean_dark.png"}

@@ -34,11 +34,7 @@ pub fn start() {
         let bridge = if host_param.as_deref() == Some("parent") || host_param.as_deref() == Some("vscode") {
             crate::host::Bridge::new()
         } else if let Some(b) = crate::host::Bridge::new() {
-            if b.is_vscode() {
-                Some(b)
-            } else {
-                None
-            }
+            if b.is_vscode() { Some(b) } else { None }
         } else {
             None
         };

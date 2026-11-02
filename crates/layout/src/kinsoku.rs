@@ -43,7 +43,7 @@ pub fn is_east_asian(c: char) -> bool {
         | 0xF900..=0xFAFF        // compatibility ideographs
         | 0xFE30..=0xFE4F        // CJK compatibility forms
         | 0xFF01..=0xFFEF        // fullwidth and halfwidth forms
-        | 0x20000..=0x3FFFF)     // supplementary ideographs
+        | 0x20000..=0x3FFFF) // supplementary ideographs
 }
 
 /// Adjust the break opportunities `opps` (byte offsets into `text`: a line may start there) for

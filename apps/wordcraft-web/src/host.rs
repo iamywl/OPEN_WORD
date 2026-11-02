@@ -39,12 +39,7 @@ impl Bridge {
         if let Ok(val) = js_sys::Reflect::get(&window, &JsValue::from_str("__WORDCRAFT_VSCODE_POST__"))
             && let Ok(func) = val.dyn_into::<js_sys::Function>()
         {
-            return Some(Self {
-                window,
-                parent: None,
-                origin: None,
-                vscode_post: Some(func),
-            });
+            return Some(Self { window, parent: None, origin: None, vscode_post: Some(func) });
         }
 
         // 2. Check for framed parent window
@@ -61,12 +56,7 @@ impl Bridge {
         if parent.location().origin().ok()? != origin {
             return None;
         }
-        Some(Self {
-            window,
-            parent: Some(parent),
-            origin: Some(origin),
-            vscode_post: None,
-        })
+        Some(Self { window, parent: Some(parent), origin: Some(origin), vscode_post: None })
     }
 
     /// Hand saved and exported files to the host instead of downloading them, report unsaved

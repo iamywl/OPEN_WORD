@@ -1,0 +1,19 @@
+{"steps": 10}
+{"method": "engine.execute", "params": {"command": "file.open", "params": {"path": "/Users/ywlee/sideproejct/word_extention/test_documents/signature_contract_test.docx"}}}
+{"method": "engine.execute", "params": {"command": "view.zoom", "params": {"value": 100}}}
+{"steps": 15}
+{"method": "engine.execute", "params": {"command": "caret.docEnd", "params": {}}}
+{"method": "engine.execute", "params": {"command": "insert.picture", "params": {"path": "/Users/ywlee/sideproejct/word_extention/test_documents/stamp_transparent.png", "width": 70.0}}}
+{"steps": 15}
+{"method": "engine.execute", "params": {"command": "arrange.wrap", "params": {"wrap": "behindText"}}}
+{"method": "engine.execute", "params": {"command": "arrange.bounds", "params": {"page": 0, "x": 420.0, "y": 300.0, "width": 70.0, "height": 70.0}}}
+{"steps": 15}
+{"method": "engine.execute", "params": {"command": "ui.tab", "params": {"tab": "Picture Format"}}}
+{"steps": 25}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_signature_behind_text.png"}
+{"method": "engine.execute", "params": {"command": "insert.picture", "params": {"path": "/Users/ywlee/sideproejct/word_extention/test_documents/stamp_white_bg.jpg", "width": 70.0}}}
+{"steps": 15}
+{"method": "engine.execute", "params": {"command": "arrange.wrap", "params": {"wrap": "behindText"}}}
+{"method": "engine.execute", "params": {"command": "arrange.bounds", "params": {"page": 0, "x": 420.0, "y": 240.0, "width": 70.0, "height": 70.0}}}
+{"steps": 25}
+{"shot": "/Users/ywlee/sideproejct/word_extention/qa_proof_signature_white_bg_test.png"}

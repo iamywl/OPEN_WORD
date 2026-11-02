@@ -758,7 +758,18 @@ mod tests {
 
     #[test]
     fn fonts_with_a_clone_have_named_substitutes() {
-        for f in ["Times New Roman", "Times New Roman Cyr", "Arial", "Courier New", "Palatino Linotype", "Symbol", "Malgun Gothic", "맑은 고딕", "Batang", "바탕"] {
+        for f in [
+            "Times New Roman",
+            "Times New Roman Cyr",
+            "Arial",
+            "Courier New",
+            "Palatino Linotype",
+            "Symbol",
+            "Malgun Gothic",
+            "맑은 고딕",
+            "Batang",
+            "바탕",
+        ] {
             assert!(has_named_substitutes(f), "{f}");
         }
         for f in ["No Such Brand Font", "Cambria", "Georgia", "Brand Serif"] {
@@ -771,18 +782,12 @@ mod tests {
         for f in ["Malgun Gothic", "맑은 고딕", "Dotum", "돋움", "Gulim", "굴림", "NanumGothic", "나눔고딕"] {
             assert!(has_named_substitutes(f), "{f}");
             let subs = substitutes(f);
-            assert!(
-                subs.contains(&"Apple SD Gothic Neo") || subs.contains(&"Malgun Gothic") || subs.contains(&"Noto Sans CJK KR"),
-                "{f}: {subs:?}"
-            );
+            assert!(subs.contains(&"Apple SD Gothic Neo") || subs.contains(&"Malgun Gothic") || subs.contains(&"Noto Sans CJK KR"), "{f}: {subs:?}");
         }
         for f in ["Batang", "바탕", "Gungsuh", "궁서", "NanumMyeongjo", "나눔명조"] {
             assert!(has_named_substitutes(f), "{f}");
             let subs = substitutes(f);
-            assert!(
-                subs.contains(&"AppleMyungjo") || subs.contains(&"Batang") || subs.contains(&"Noto Serif CJK KR"),
-                "{f}: {subs:?}"
-            );
+            assert!(subs.contains(&"AppleMyungjo") || subs.contains(&"Batang") || subs.contains(&"Noto Serif CJK KR"), "{f}: {subs:?}");
         }
         // Resolving "맑은 고딕" on macOS finds Apple SD Gothic Neo and covers Hangul.
         let r = resolve("맑은 고딕", false, false);
