@@ -1,14 +1,14 @@
-//! Software updates, background check at startup, and startup prompt modal.
+//! Software updates, manual check dialog, and startup notification suppression.
 
 use crate::WordApp;
 
 #[cfg(not(target_arch = "wasm32"))]
-use craft_update::updater::{Action, Status, Updater};
+use craft_update::updater::{Status, Updater};
 
 pub(crate) struct Runtime {
     #[cfg(not(target_arch = "wasm32"))]
     updater: Updater,
-    /// The desktop app turns the check at start on; tests and the web build leave it off.
+    /// Startup update check is permanently off to prevent intrusive modal popups.
     #[cfg(not(target_arch = "wasm32"))]
     startup_check: bool,
     #[cfg(not(target_arch = "wasm32"))]
@@ -38,10 +38,10 @@ impl Default for Runtime {
 }
 
 impl WordApp {
-    /// Whether the app asks for a newer release when it starts (off until the desktop app turns it on).
+    /// Whether the app asks for a newer release when it starts (permanently suppressed per user request).
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn set_startup_update_check(&mut self, on: bool) {
-        self.updates_rt.startup_check = on;
+    pub fn set_startup_update_check(&mut self, _on: bool) {
+        self.updates_rt.startup_check = false;
     }
 }
 
@@ -49,6 +49,7 @@ pub(crate) fn check(app: &mut WordApp) {
     #[cfg(not(target_arch = "wasm32"))]
     {
         app.updates_rt.check_requested = true;
+        app.updates_rt.manual_window_open = true;
         if let Some(ctx) = &app.updates_rt.repaint {
             ctx.request_repaint();
         }
@@ -65,10 +66,9 @@ pub(crate) fn tick(app: &mut WordApp, ctx: &egui::Context) {
     {
         let rt = &mut app.updates_rt;
         rt.repaint = Some(ctx.clone());
+        // Only run update check if explicitly requested by user via menu
         if std::mem::take(&mut rt.check_requested) {
             rt.updater.check_now(ctx);
-        } else if rt.startup_check {
-            rt.updater.check_at_start(ctx);
         }
         rt.updater.tick(ctx);
     }
@@ -79,25 +79,21 @@ pub(crate) fn tick(app: &mut WordApp, ctx: &egui::Context) {
 pub(crate) fn show(app: &mut WordApp, ctx: &egui::Context) {
     #[cfg(not(target_arch = "wasm32"))]
     {
-        // The restart helper is scheduled before the app closes, so no update starts over unsaved work.
-        if app.updates_rt.startup_check {
-            let clean = !(app.session.dirty || app.save_unconfirmed() || app.printing.busy() || crate::panes::has_comment_drafts(app));
-            match app.updates_rt.updater.show_if(ctx, clean) {
-                Action::OpenUrl(url) => ctx.open_url(egui::OpenUrl::new_tab(url)),
-                Action::Close => ctx.send_viewport_cmd(egui::ViewportCommand::Close),
-                Action::None => {}
-            }
-        }
-        // The window answers Help ▸ Check for Updates, so it follows the updater's status.
+        // Automatic update notification is completely suppressed:
+        // never show StartupPrompt cards automatically.
         let rt = &mut app.updates_rt;
-        (rt.manual_window_open, rt.status_message) = match rt.updater.status() {
-            Status::Idle => (false, None),
-            Status::Checking => (true, None),
-            Status::UpToDate => {
-                (true, Some(tl!("WordCraft {version} is currently the newest version available.").replace("{version}", env!("CARGO_PKG_VERSION"))))
-            }
-            Status::Failed(e) => (true, Some(tl!("Could not check for updates:\n{error}").replace("{error}", e))),
-        };
+        if rt.manual_window_open {
+            let (open, msg) = match rt.updater.status() {
+                Status::Idle => (false, None),
+                Status::Checking => (true, None),
+                Status::UpToDate => {
+                    (true, Some(tl!("WordCraft {version} is currently the newest version available.").replace("{version}", env!("CARGO_PKG_VERSION"))))
+                }
+                Status::Failed(e) => (true, Some(tl!("Could not check for updates:\n{error}").replace("{error}", e))),
+            };
+            rt.manual_window_open = open;
+            rt.status_message = msg;
+        }
     }
 
     if app.updates_rt.manual_window_open {

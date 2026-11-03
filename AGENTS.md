@@ -83,7 +83,7 @@ WordCraft는 웹뷰나 일렉트론 래퍼가 아닌 **100% 순수 Rust 네이�
 
 ## Never Show Intrusive Update Dialogs (개발/로컬 빌드 업데이트 모달 팝업 방지)
 - **원칙:** 업스트림 저장소 버전과 로컬 워크스페이스 간 버전 불일치로 인해 시작 시 "WordCraft UPDATE v0.11.0 to 0.14.0"과 같은 모달 팝업이 뜨는 현상을 엄격히 금지합니다.
-- `apps/wordcraft/src/main.rs`의 `app.set_startup_update_check(false)`를 항상 유지하며, `crates/ui-egui/src/updates_ui.rs`에서 `startup_check`가 켜져 있지 않은 한 자동 팝업 모달이 노출되지 않도록 가드합니다.
+- `apps/wordcraft/src/main.rs`의 `app.set_startup_update_check(false)`를 항상 유지하며, `crates/ui-egui/src/updates_ui.rs`에서 시작 시 자동 업데이트 확인 및 `StartupPrompt` 팝업 카드가 화면에 일절 노출되지 않도록 영구 차단합니다.
 - 업데이트는 오직 사용자가 메뉴(도움말 ▸ 업데이트 확인 / Help ▸ Check for Updates)를 수동으로 클릭했을 때만 확인 창을 엽니다.
 
 ## True Korean Localization & Hangul IME Parity (한국어 로컬라이제이션 및 한글 입력 무결성)
