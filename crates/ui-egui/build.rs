@@ -45,19 +45,12 @@ fn craft_i18n() -> String {
     println!("cargo::rerun-if-env-changed=CRAFT_I18N_DIR");
     println!("cargo::rerun-if-env-changed=CRAFT_I18N_REQUIRED");
     let required = std::env::var("CRAFT_I18N_REQUIRED").is_ok_and(|v| v.trim() == "1");
-    let dir = std::env::var_os("CRAFT_I18N_DIR")
-        .filter(|d| !d.is_empty())
-        .map(std::path::PathBuf::from)
-        .or_else(|| {
-            let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
-            let root = manifest.parent().and_then(|p| p.parent())?;
-            let candidates = [
-                root.join("vendor/craft-i18n"),
-                root.join("craft-i18n"),
-                root.parent().unwrap_or(root).join("craft-i18n"),
-            ];
-            candidates.into_iter().find(|p| p.join("locales").is_dir())
-        });
+    let dir = std::env::var_os("CRAFT_I18N_DIR").filter(|d| !d.is_empty()).map(std::path::PathBuf::from).or_else(|| {
+        let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+        let root = manifest.parent().and_then(|p| p.parent())?;
+        let candidates = [root.join("vendor/craft-i18n"), root.join("craft-i18n"), root.parent().unwrap_or(root).join("craft-i18n")];
+        candidates.into_iter().find(|p| p.join("locales").is_dir())
+    });
     let entries = match dir {
         Some(dir) => match locales(&dir.join("locales")) {
             Ok(entries) => entries,

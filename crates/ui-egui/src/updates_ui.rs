@@ -86,9 +86,10 @@ pub(crate) fn show(app: &mut WordApp, ctx: &egui::Context) {
             let (open, msg) = match rt.updater.status() {
                 Status::Idle => (false, None),
                 Status::Checking => (true, None),
-                Status::UpToDate => {
-                    (true, Some(tl!("WordCraft {version} is currently the newest version available.").replace("{version}", env!("CARGO_PKG_VERSION"))))
-                }
+                Status::UpToDate => (
+                    true,
+                    Some(tl!("WordCraft {version} is currently the newest version available.").replace("{version}", env!("CARGO_PKG_VERSION"))),
+                ),
                 Status::Failed(e) => (true, Some(tl!("Could not check for updates:\n{error}").replace("{error}", e))),
             };
             rt.manual_window_open = open;
