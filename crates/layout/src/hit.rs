@@ -419,10 +419,18 @@ impl DocLayout {
             StoryRef::Body => text_at(p, page, x, y).is_some(),
             StoryRef::Part(id) => hf_text_at(p, id, x, y),
         };
+        let on_border_edge = |o: &ObjectHit| {
+            let pt = o.unspin(x, y);
+            o.rect.expand(edge).contains(pt) && !o.rect.expand(-edge.max(4.0)).contains(pt)
+        };
         cands
             .iter()
             .find(|o| !o.behind() && grabs(o))
-            .or_else(|| if text_here { None } else { cands.iter().find(|o| o.behind() && grabs(o)) })
+            .or_else(|| {
+                cands
+                    .iter()
+                    .find(|o| o.behind() && grabs(o) && (!text_here || on_border_edge(o)))
+            })
             .cloned()
     }
 
